@@ -104,6 +104,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get alarmTone => '알람 소리';
 
   @override
+  String get volume => '볼륨';
+
+  @override
   String get active => '활성화';
 
   @override
@@ -291,4 +294,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get editAlarmTime => '알람 시간 편집';
+
+  @override
+  String get sound => '소리';
+
+  @override
+  String get vibration => '진동';
+
+  @override
+  String get snooze => '다시알림';
+
+  @override
+  String get alarmSettingsUpdated => '알람 설정이 업데이트되었습니다';
 }

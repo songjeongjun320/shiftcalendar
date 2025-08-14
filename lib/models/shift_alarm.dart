@@ -33,6 +33,15 @@ class ShiftAlarm {
         .join(', ');
   }
   
+  String getLocalizedTargetShiftTypesDisplay(BuildContext context) {
+    if (targetShiftTypes.length == ShiftType.values.length) {
+      return 'All shifts'; // Can be localized if needed
+    }
+    return targetShiftTypes
+        .map((type) => type.localizedDisplayName(context))
+        .join(', ');
+  }
+  
   ShiftAlarm copyWith({
     String? id,
     String? patternId,
@@ -106,6 +115,7 @@ class AlarmSettings {
   final bool vibration;
   final bool sound;
   final String soundPath;
+  final double volume; // 0.0 to 1.0
   final bool snooze;
   final int snoozeDuration; // minutes
   final int maxSnoozeCount;
@@ -114,6 +124,7 @@ class AlarmSettings {
     this.vibration = true,
     this.sound = true,
     this.soundPath = '',
+    this.volume = 0.8,
     this.snooze = true,
     this.snoozeDuration = 10,
     this.maxSnoozeCount = 3,
@@ -123,6 +134,7 @@ class AlarmSettings {
     bool? vibration,
     bool? sound,
     String? soundPath,
+    double? volume,
     bool? snooze,
     int? snoozeDuration,
     int? maxSnoozeCount,
@@ -131,6 +143,7 @@ class AlarmSettings {
       vibration: vibration ?? this.vibration,
       sound: sound ?? this.sound,
       soundPath: soundPath ?? this.soundPath,
+      volume: volume ?? this.volume,
       snooze: snooze ?? this.snooze,
       snoozeDuration: snoozeDuration ?? this.snoozeDuration,
       maxSnoozeCount: maxSnoozeCount ?? this.maxSnoozeCount,
@@ -142,6 +155,7 @@ class AlarmSettings {
       'vibration': vibration,
       'sound': sound,
       'sound_path': soundPath,
+      'volume': volume,
       'snooze': snooze,
       'snooze_duration': snoozeDuration,
       'max_snooze_count': maxSnoozeCount,
@@ -153,6 +167,7 @@ class AlarmSettings {
       vibration: map['vibration'] ?? true,
       sound: map['sound'] ?? true,
       soundPath: map['sound_path'] ?? '',
+      volume: map['volume']?.toDouble() ?? 0.8,
       snooze: map['snooze'] ?? true,
       snoozeDuration: map['snooze_duration'] ?? 10,
       maxSnoozeCount: map['max_snooze_count'] ?? 3,

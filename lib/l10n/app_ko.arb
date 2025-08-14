@@ -34,6 +34,7 @@
   "time": "시간",
   "repeat": "반복",
   "alarmTone": "알람 소리",
+  "volume": "볼륨",
   "active": "활성화",
   "enableThisAlarm": "이 알람 활성화",
   
@@ -102,5 +103,9 @@
   "close": "닫기",
   "english": "English",
   "korean": "한국어",
-  "editAlarmTime": "알람 시간 편집"
+  "editAlarmTime": "알람 시간 편집",
+  "sound": "소리",
+  "vibration": "진동",
+  "snooze": "다시알림",
+  "alarmSettingsUpdated": "알람 설정이 업데이트되었습니다"
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class BasicAlarm {
   final String id;
@@ -7,6 +8,7 @@ class BasicAlarm {
   final Set<int> repeatDays; // 1=Monday, 2=Tuesday, ..., 7=Sunday
   final bool isActive;
   final AlarmTone tone;
+  final double volume; // 0.0 to 1.0
   final DateTime createdAt;
 
   const BasicAlarm({
@@ -16,6 +18,7 @@ class BasicAlarm {
     required this.repeatDays,
     this.isActive = true,
     required this.tone,
+    this.volume = 0.8,
     required this.createdAt,
   });
 
@@ -42,6 +45,29 @@ class BasicAlarm {
     
     return selectedDays.map((day) => weekdays[day - 1]).join(', ');
   }
+  
+  String getLocalizedRepeatDaysDisplay(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    if (repeatDays.isEmpty) return l10n.once;
+    if (repeatDays.length == 7) return l10n.everyDay;
+    
+    final weekdays = [l10n.mon, l10n.tue, l10n.wed, l10n.thu, l10n.fri, l10n.sat, l10n.sun];
+    final selectedDays = repeatDays.toList()..sort();
+    
+    // Check for weekdays (Mon-Fri)
+    if (selectedDays.length == 5 && 
+        selectedDays.every((day) => day >= 1 && day <= 5)) {
+      return l10n.weekdays;
+    }
+    
+    // Check for weekends
+    if (selectedDays.length == 2 && 
+        selectedDays.contains(6) && selectedDays.contains(7)) {
+      return l10n.weekends;
+    }
+    
+    return selectedDays.map((day) => weekdays[day - 1]).join(', ');
+  }
 
   BasicAlarm copyWith({
     String? id,
@@ -50,6 +76,7 @@ class BasicAlarm {
     Set<int>? repeatDays,
     bool? isActive,
     AlarmTone? tone,
+    double? volume,
     DateTime? createdAt,
   }) {
     return BasicAlarm(
@@ -59,6 +86,7 @@ class BasicAlarm {
       repeatDays: repeatDays ?? this.repeatDays,
       isActive: isActive ?? this.isActive,
       tone: tone ?? this.tone,
+      volume: volume ?? this.volume,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -72,6 +100,7 @@ class BasicAlarm {
       'repeat_days': repeatDays.join(','),
       'is_active': isActive ? 1 : 0,
       'tone': tone.name,
+      'volume': volume,
       'created_at': createdAt.millisecondsSinceEpoch,
     };
   }
@@ -95,6 +124,7 @@ class BasicAlarm {
         (tone) => tone.name == (map['tone'] ?? 'bell'),
         orElse: () => AlarmTone.bell,
       ),
+      volume: map['volume']?.toDouble() ?? 0.8,
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['created_at']),
     );
   }
@@ -116,4 +146,22 @@ enum AlarmTone {
 
   final String displayName;
   final String soundPath;
+}
+
+extension AlarmToneLocalization on AlarmTone {
+  String localizedDisplayName(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (this) {
+      case AlarmTone.bell:
+        return l10n.bell;
+      case AlarmTone.chime:
+        return l10n.chime;
+      case AlarmTone.classic:
+        return l10n.classic;
+      case AlarmTone.gentle:
+        return l10n.gentle;
+      case AlarmTone.radar:
+        return l10n.radar;
+    }
+  }
 }

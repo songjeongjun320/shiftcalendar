@@ -21,6 +21,7 @@ class _BasicAlarmDialogState extends State<BasicAlarmDialog> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   Set<int> _selectedDays = <int>{};
   AlarmTone _selectedTone = AlarmTone.bell;
+  double _selectedVolume = 0.8;
   bool _isActive = true;
   
   List<String> _getWeekdays(AppLocalizations l10n) {
@@ -41,6 +42,7 @@ class _BasicAlarmDialogState extends State<BasicAlarmDialog> {
       _selectedTime = alarm.time;
       _selectedDays = Set.from(alarm.repeatDays);
       _selectedTone = alarm.tone;
+      _selectedVolume = alarm.volume;
       _isActive = alarm.isActive;
     } else {
       // Creating new alarm
@@ -143,10 +145,38 @@ class _BasicAlarmDialogState extends State<BasicAlarmDialog> {
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(Icons.music_note),
                 title: Text(l10n.alarmTone),
-                subtitle: Text(_selectedTone.displayName),
+                subtitle: Text(_selectedTone.localizedDisplayName(context)),
                 onTap: _selectTone,
               ),
               
+              SizedBox(height: 16),
+              
+              // Volume control
+              Text(
+                l10n.volume,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.volume_down, size: 20),
+                  Expanded(
+                    child: Slider(
+                      value: _selectedVolume,
+                      min: 0.0,
+                      max: 1.0,
+                      divisions: 10,
+                      label: '${(_selectedVolume * 100).round()}%',
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedVolume = value;
+                        });
+                      },
+                    ),
+                  ),
+                  Icon(Icons.volume_up, size: 20),
+                ],
+              ),
               SizedBox(height: 16),
               
               // Active switch
@@ -215,7 +245,7 @@ class _BasicAlarmDialogState extends State<BasicAlarmDialog> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: AlarmTone.values.map((tone) => RadioListTile<AlarmTone>(
-            title: Text(tone.displayName),
+            title: Text(tone.localizedDisplayName(context)),
             value: tone,
             groupValue: _selectedTone,
             onChanged: (value) {
@@ -247,6 +277,7 @@ class _BasicAlarmDialogState extends State<BasicAlarmDialog> {
       repeatDays: Set.from(_selectedDays),
       isActive: _isActive,
       tone: _selectedTone,
+      volume: _selectedVolume,
       createdAt: widget.alarm?.createdAt ?? DateTime.now(),
     );
     

@@ -284,6 +284,12 @@ abstract class AppLocalizations {
   /// **'Alarm tone'**
   String get alarmTone;
 
+  /// No description provided for @volume.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get volume;
+
   /// No description provided for @active.
   ///
   /// In en, this message translates to:
@@ -637,6 +643,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit alarm time'**
   String get editAlarmTime;
+
+  /// No description provided for @sound.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound'**
+  String get sound;
+
+  /// No description provided for @vibration.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibration'**
+  String get vibration;
+
+  /// No description provided for @snooze.
+  ///
+  /// In en, this message translates to:
+  /// **'Snooze'**
+  String get snooze;
+
+  /// No description provided for @alarmSettingsUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm settings updated'**
+  String get alarmSettingsUpdated;
 }
 
 class _AppLocalizationsDelegate

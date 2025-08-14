@@ -13,6 +13,7 @@ import 'services/basic_alarm_service.dart';
 import 'services/language_service.dart';
 import 'widgets/pattern_creation_dialog.dart';
 import 'widgets/basic_alarm_dialog.dart';
+import 'widgets/shift_alarm_settings_dialog.dart';
 
 class ShiftCalendarApp extends StatefulWidget {
   final FlutterLocalNotificationsPlugin notifications;
@@ -176,8 +177,8 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
         patternId: pattern.id,
         targetShiftTypes: {shiftType},
         time: defaultTime,
-        title: '${shiftType.displayName} Shift Alarm',
-        message: 'Time to get ready for your ${shiftType.displayName.toLowerCase()} shift!',
+        title: '${shiftType.localizedFullName(context)}',
+        message: 'Time to get ready for your ${shiftType.localizedDisplayName(context).toLowerCase()} shift!',
         settings: AlarmSettings(),
         createdAt: DateTime.now(),
       );
@@ -205,6 +206,39 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
     await _loadCurrentPattern();
   }
 
+  void _showShiftAlarmSettingsDialog(ShiftAlarm alarm) {
+    showDialog(
+      context: context,
+      builder: (context) => ShiftAlarmSettingsDialog(
+        alarm: alarm,
+        onAlarmUpdated: _updateShiftAlarm,
+      ),
+    );
+  }
+  
+  Future<void> _updateShiftAlarm(ShiftAlarm updatedAlarm) async {
+    await _storageService.saveAlarm(updatedAlarm);
+    
+    if (_currentPattern != null) {
+      // Reschedule all alarms for this pattern
+      final allAlarms = await _storageService.getAlarmsForPattern(_currentPattern!.id);
+      await _notificationService.scheduleShiftAlarms(allAlarms, _currentPattern!);
+    }
+    
+    await _loadCurrentPattern();
+    
+    // Show confirmation
+    if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Alarm settings updated'), // Can be localized if needed
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+  
   Future<void> _editAlarmTime(ShiftAlarm alarm) async {
     final l10n = AppLocalizations.of(context)!;
     final TimeOfDay? newTime = await showTimePicker(
@@ -508,7 +542,7 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
               spacing: 8,
               children: _currentPattern!.cycle
                   .map((shift) => Chip(
-                        label: Text(shift.shortCode),
+                        label: Text(shift.localizedShortCode(context)),
                         backgroundColor: _getShiftColor(shift),
                       ))
                   .toList(),
@@ -520,6 +554,7 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
   }
   
   Widget _buildCurrentShiftCard() {
+    final l10n = AppLocalizations.of(context)!;
     final currentShift = _schedulingService.getCurrentShift(_currentPattern!);
     
     return Card(
@@ -533,7 +568,7 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
                 Icon(Icons.today, color: Theme.of(context).colorScheme.primary),
                 SizedBox(width: 8),
                 Text(
-                  'Today\'s Shift',
+                  l10n.todayShift,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ],
@@ -546,7 +581,7 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                currentShift.displayName,
+                currentShift.localizedDisplayName(context),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -581,7 +616,7 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
             if (_currentAlarms.isEmpty)
               Text(l10n.noAlarmsConfigured)
             else
-              ..._currentAlarms.map((alarm) => ListTile(
+              ..._getSortedAlarms().map((alarm) => ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: Switch(
                       value: alarm.isActive,
@@ -589,12 +624,12 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
                     ),
                     title: Text(alarm.title),
                     subtitle: Text(
-                      '${alarm.time.format(context)} for ${alarm.targetShiftTypesDisplay}',
+                      '${alarm.time.format(context)} for ${alarm.getLocalizedTargetShiftTypesDisplay(context)}',
                     ),
                     trailing: IconButton(
-                      icon: Icon(Icons.edit_outlined),
-                      onPressed: () => _editAlarmTime(alarm),
-                      tooltip: l10n.editAlarmTime,
+                      icon: Icon(Icons.settings_outlined),
+                      onPressed: () => _showShiftAlarmSettingsDialog(alarm),
+                      tooltip: 'Alarm settings',
                     ),
                   )),
           ],
@@ -650,7 +685,7 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
                                 style: Theme.of(context).textTheme.titleSmall,
                               ),
                               Text(
-                                '${alarm.time.format(context)} • ${alarm.repeatDaysDisplay}',
+                                '${alarm.time.format(context)} • ${alarm.getLocalizedRepeatDaysDisplay(context)}',
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
@@ -748,7 +783,7 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
                           Text(preview.dateDisplay),
                           SizedBox(height: 4),
                           Text(
-                            preview.shiftType.shortCode,
+                            preview.shiftType.localizedShortCode(context),
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -805,6 +840,35 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
         ),
       ),
     );
+  }
+  
+  List<ShiftAlarm> _getSortedAlarms() {
+    final sorted = List<ShiftAlarm>.from(_currentAlarms);
+    sorted.sort((a, b) {
+      // Sort by shift type priority (day -> night -> off)
+      final aShiftPriority = _getShiftTypePriority(a.targetShiftTypes.first);
+      final bShiftPriority = _getShiftTypePriority(b.targetShiftTypes.first);
+      if (aShiftPriority != bShiftPriority) {
+        return aShiftPriority.compareTo(bShiftPriority);
+      }
+      
+      // Then by time
+      final aMinutes = a.time.hour * 60 + a.time.minute;
+      final bMinutes = b.time.hour * 60 + b.time.minute;
+      return aMinutes.compareTo(bMinutes);
+    });
+    return sorted;
+  }
+  
+  int _getShiftTypePriority(ShiftType shiftType) {
+    switch (shiftType) {
+      case ShiftType.day:
+        return 0;
+      case ShiftType.night:
+        return 1;
+      case ShiftType.off:
+        return 2;
+    }
   }
   
   Color _getShiftColor(ShiftType shiftType) {

@@ -104,6 +104,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alarmTone => 'Alarm tone';
 
   @override
+  String get volume => 'Volume';
+
+  @override
   String get active => 'Active';
 
   @override
@@ -291,4 +294,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editAlarmTime => 'Edit alarm time';
+
+  @override
+  String get sound => 'Sound';
+
+  @override
+  String get vibration => 'Vibration';
+
+  @override
+  String get snooze => 'Snooze';
+
+  @override
+  String get alarmSettingsUpdated => 'Alarm settings updated';
 }

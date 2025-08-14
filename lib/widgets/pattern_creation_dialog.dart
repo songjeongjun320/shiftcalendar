@@ -74,7 +74,7 @@ class _PatternCreationDialogState extends State<PatternCreationDialog> {
                     spacing: 4,
                     children: (preset['cycle'] as List<ShiftType>)
                         .map((shift) => Chip(
-                              label: Text(shift.shortCode),
+                              label: Text(shift.localizedShortCode(context)),
                               backgroundColor: _getShiftColor(shift),
                               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ))
@@ -146,7 +146,7 @@ class _PatternCreationDialogState extends State<PatternCreationDialog> {
         Wrap(
           spacing: 8,
           children: ShiftType.values.map((shiftType) => ActionChip(
-            label: Text(shiftType.displayName),
+            label: Text(shiftType.localizedDisplayName(context)),
             backgroundColor: _getShiftColor(shiftType),
             onPressed: () => _addShiftToCustomCycle(shiftType),
           )).toList(),
@@ -170,7 +170,7 @@ class _PatternCreationDialogState extends State<PatternCreationDialog> {
                 final index = entry.key;
                 final shift = entry.value;
                 return Chip(
-                  label: Text('${index + 1}. ${shift.shortCode}'),
+                  label: Text('${index + 1}. ${shift.localizedShortCode(context)}'),
                   backgroundColor: _getShiftColor(shift),
                   deleteIcon: Icon(Icons.close, size: 16),
                   onDeleted: () => _removeShiftFromCustomCycle(index),

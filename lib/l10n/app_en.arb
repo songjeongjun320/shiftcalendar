@@ -34,6 +34,7 @@
   "time": "Time",
   "repeat": "Repeat",
   "alarmTone": "Alarm tone",
+  "volume": "Volume",
   "active": "Active",
   "enableThisAlarm": "Enable this alarm",
   
@@ -102,5 +103,9 @@
   "close": "Close",
   "english": "English",
   "korean": "한국어",
-  "editAlarmTime": "Edit alarm time"
+  "editAlarmTime": "Edit alarm time",
+  "sound": "Sound",
+  "vibration": "Vibration",
+  "snooze": "Snooze",
+  "alarmSettingsUpdated": "Alarm settings updated"
 }
