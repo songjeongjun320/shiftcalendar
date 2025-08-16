@@ -25,8 +25,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get useSamplePattern => 'Use Sample Pattern';
 
   @override
-  String get samplePatternDescription =>
-      'Create your own pattern or use the sample Day-Day-Night-Night-Off-Off pattern.';
+  String get samplePatternDescription => 'Pattern: Day-Day-Night-Night-Off-Off';
 
   @override
   String get currentPattern => 'Current Pattern';
@@ -185,6 +184,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get radar => 'Radar';
 
   @override
+  String get annoyingAlarm => 'Annoying Alarm';
+
+  @override
+  String get cinematicEpicTrailer => 'Cinematic Epic Trailer';
+
+  @override
+  String get emergencyAlarm => 'Emergency Alarm';
+
+  @override
+  String get firefighterAlarm => 'Firefighter Alarm';
+
+  @override
+  String get funnyAlarm => 'Funny Alarm';
+
+  @override
+  String get gentleAcoustic => 'Gentle Acoustic';
+
+  @override
+  String get wakeupCall => 'Wake Up Call';
+
+  @override
   String get deleteAlarm => 'Delete Alarm';
 
   @override
@@ -204,21 +224,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clearAllData => 'Clear All Data';
-
-  @override
-  String scheduledNotifications(Object count) {
-    return 'Scheduled notifications: $count';
-  }
-
-  @override
-  String dayShiftAlarms(Object count) {
-    return 'Day shift alarms: $count';
-  }
-
-  @override
-  String nightShiftAlarms(Object count) {
-    return 'Night shift alarms: $count';
-  }
 
   @override
   String get noAlarmsConfigured => 'No alarms configured';
@@ -306,4 +311,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get alarmSettingsUpdated => 'Alarm settings updated';
+
+  @override
+  String get patternStartDate => 'Pattern Start Date';
+
+  @override
+  String get selectStartDate => 'Select start date';
+
+  @override
+  String get startDateHint => 'Select the date your first shift (Day) begins.';
+
+  @override
+  String get tomorrow => 'Tomorrow';
+
+  @override
+  String get nextMonday => 'Next Monday';
+
+  @override
+  String get chooseDate => 'Choose Date';
+
+  @override
+  String get patternStartsOn => 'Pattern Starts On';
 }

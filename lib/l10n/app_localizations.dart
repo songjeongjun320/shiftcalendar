@@ -131,7 +131,7 @@ abstract class AppLocalizations {
   /// No description provided for @samplePatternDescription.
   ///
   /// In en, this message translates to:
-  /// **'Create your own pattern or use the sample Day-Day-Night-Night-Off-Off pattern.'**
+  /// **'Pattern: Day-Day-Night-Night-Off-Off'**
   String get samplePatternDescription;
 
   /// No description provided for @currentPattern.
@@ -446,6 +446,48 @@ abstract class AppLocalizations {
   /// **'Radar'**
   String get radar;
 
+  /// No description provided for @annoyingAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Annoying Alarm'**
+  String get annoyingAlarm;
+
+  /// No description provided for @cinematicEpicTrailer.
+  ///
+  /// In en, this message translates to:
+  /// **'Cinematic Epic Trailer'**
+  String get cinematicEpicTrailer;
+
+  /// No description provided for @emergencyAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Alarm'**
+  String get emergencyAlarm;
+
+  /// No description provided for @firefighterAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Firefighter Alarm'**
+  String get firefighterAlarm;
+
+  /// No description provided for @funnyAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Funny Alarm'**
+  String get funnyAlarm;
+
+  /// No description provided for @gentleAcoustic.
+  ///
+  /// In en, this message translates to:
+  /// **'Gentle Acoustic'**
+  String get gentleAcoustic;
+
+  /// No description provided for @wakeupCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Wake Up Call'**
+  String get wakeupCall;
+
   /// No description provided for @deleteAlarm.
   ///
   /// In en, this message translates to:
@@ -487,24 +529,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear All Data'**
   String get clearAllData;
-
-  /// No description provided for @scheduledNotifications.
-  ///
-  /// In en, this message translates to:
-  /// **'Scheduled notifications: {count}'**
-  String scheduledNotifications(Object count);
-
-  /// No description provided for @dayShiftAlarms.
-  ///
-  /// In en, this message translates to:
-  /// **'Day shift alarms: {count}'**
-  String dayShiftAlarms(Object count);
-
-  /// No description provided for @nightShiftAlarms.
-  ///
-  /// In en, this message translates to:
-  /// **'Night shift alarms: {count}'**
-  String nightShiftAlarms(Object count);
 
   /// No description provided for @noAlarmsConfigured.
   ///
@@ -667,6 +691,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Alarm settings updated'**
   String get alarmSettingsUpdated;
+
+  /// No description provided for @patternStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Pattern Start Date'**
+  String get patternStartDate;
+
+  /// No description provided for @selectStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select start date'**
+  String get selectStartDate;
+
+  /// No description provided for @startDateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the date your first shift (Day) begins.'**
+  String get startDateHint;
+
+  /// No description provided for @tomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get tomorrow;
+
+  /// No description provided for @nextMonday.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Monday'**
+  String get nextMonday;
+
+  /// No description provided for @chooseDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Date'**
+  String get chooseDate;
+
+  /// No description provided for @patternStartsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Pattern Starts On'**
+  String get patternStartsOn;
 }
 
 class _AppLocalizationsDelegate

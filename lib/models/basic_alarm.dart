@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import 'shift_alarm.dart';
 
 class BasicAlarm {
   final String id;
@@ -122,7 +123,7 @@ class BasicAlarm {
       isActive: map['is_active'] == 1,
       tone: AlarmTone.values.firstWhere(
         (tone) => tone.name == (map['tone'] ?? 'bell'),
-        orElse: () => AlarmTone.bell,
+        orElse: () => AlarmTone.wakeupcall,
       ),
       volume: map['volume']?.toDouble() ?? 0.8,
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['created_at']),
@@ -132,36 +133,5 @@ class BasicAlarm {
   @override
   String toString() {
     return '$label at ${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')} - $repeatDaysDisplay';
-  }
-}
-
-enum AlarmTone {
-  bell('Bell', 'assets/sounds/bell.mp3'),
-  chime('Chime', 'assets/sounds/chime.mp3'),
-  classic('Classic', 'assets/sounds/classic.mp3'),
-  gentle('Gentle', 'assets/sounds/gentle.mp3'),
-  radar('Radar', 'assets/sounds/radar.mp3');
-
-  const AlarmTone(this.displayName, this.soundPath);
-
-  final String displayName;
-  final String soundPath;
-}
-
-extension AlarmToneLocalization on AlarmTone {
-  String localizedDisplayName(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (this) {
-      case AlarmTone.bell:
-        return l10n.bell;
-      case AlarmTone.chime:
-        return l10n.chime;
-      case AlarmTone.classic:
-        return l10n.classic;
-      case AlarmTone.gentle:
-        return l10n.gentle;
-      case AlarmTone.radar:
-        return l10n.radar;
-    }
   }
 }

@@ -185,6 +185,27 @@ class AppLocalizationsKo extends AppLocalizations {
   String get radar => '레이더';
 
   @override
+  String get annoyingAlarm => '짜증나는 알람';
+
+  @override
+  String get cinematicEpicTrailer => '영화 예고편';
+
+  @override
+  String get emergencyAlarm => '비상 경보';
+
+  @override
+  String get firefighterAlarm => '소방관 알람';
+
+  @override
+  String get funnyAlarm => '재미있는 알람';
+
+  @override
+  String get gentleAcoustic => '부드러운 어쿠스틱';
+
+  @override
+  String get wakeupCall => '모닝콜';
+
+  @override
   String get deleteAlarm => '알람 삭제';
 
   @override
@@ -204,21 +225,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get clearAllData => '모든 데이터 지우기';
-
-  @override
-  String scheduledNotifications(Object count) {
-    return '예약된 알림: $count개';
-  }
-
-  @override
-  String dayShiftAlarms(Object count) {
-    return '주간 근무 알람: $count개';
-  }
-
-  @override
-  String nightShiftAlarms(Object count) {
-    return '야간 근무 알람: $count개';
-  }
 
   @override
   String get noAlarmsConfigured => '구성된 알람이 없습니다';
@@ -267,7 +273,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get selectAlarmTime => '알람 시간 선택';
 
   @override
-  String get selectAlarmTone => '알람 소리 선택';
+  String get selectAlarmTone => '알람음 선택';
 
   @override
   String editAlarmTimeFor(Object title) {
@@ -306,4 +312,25 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get alarmSettingsUpdated => '알람 설정이 업데이트되었습니다';
+
+  @override
+  String get patternStartDate => '패턴 시작일';
+
+  @override
+  String get selectStartDate => '시작일 선택';
+
+  @override
+  String get startDateHint => '이 패턴을 언제부터 시작할까요?';
+
+  @override
+  String get tomorrow => '내일';
+
+  @override
+  String get nextMonday => '다음 주 월요일';
+
+  @override
+  String get chooseDate => '날짜 선택';
+
+  @override
+  String get patternStartsOn => '패턴 시작일';
 }

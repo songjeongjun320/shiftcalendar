@@ -1,9 +1,50 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'shift_type.dart';
+
+enum AlarmTone {
+  anoyingalarm('Annoying Alarm', 'anoyingalarm'),
+  cinematicEpicTrailer('Cinematic Epic Trailer', 'cinematic_epic_trailer'),
+  emergencyAlarm('Emergency Alarm', 'emergency_alarm'),
+  firefighterAlarm('Firefighter Alarm', 'firefighteralarm'),
+  funnyAlarm('Funny Alarm', 'funny_alarm'),
+  gentleAcoustic('Gentle Acoustic', 'gentle_acoustic'),
+  wakeupcall('Wake Up Call', 'wakeupcall');
+
+  const AlarmTone(this.displayName, this.soundPath);
+
+  final String displayName;
+  final String soundPath;
+}
+
+extension AlarmToneLocalization on AlarmTone {
+  String localizedDisplayName(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (this) {
+      case AlarmTone.anoyingalarm:
+        return l10n.annoyingAlarm;
+      case AlarmTone.cinematicEpicTrailer:
+        return l10n.cinematicEpicTrailer;
+      case AlarmTone.emergencyAlarm:
+        return l10n.emergencyAlarm;
+      case AlarmTone.firefighterAlarm:
+        return l10n.firefighterAlarm;
+      case AlarmTone.funnyAlarm:
+        return l10n.funnyAlarm;
+      case AlarmTone.gentleAcoustic:
+        return l10n.gentleAcoustic;
+      case AlarmTone.wakeupcall:
+        return l10n.wakeupCall;
+    }
+  }
+}
+
+enum AlarmType { day, night, off }
 
 class ShiftAlarm {
   final String id;
   final String patternId;
+  final AlarmType alarmType;
   final Set<ShiftType> targetShiftTypes;
   final TimeOfDay time;
   final String title;
@@ -15,6 +56,7 @@ class ShiftAlarm {
   const ShiftAlarm({
     required this.id,
     required this.patternId,
+    required this.alarmType,
     required this.targetShiftTypes,
     required this.time,
     required this.title,
@@ -45,6 +87,7 @@ class ShiftAlarm {
   ShiftAlarm copyWith({
     String? id,
     String? patternId,
+    AlarmType? alarmType,
     Set<ShiftType>? targetShiftTypes,
     TimeOfDay? time,
     String? title,
@@ -56,6 +99,7 @@ class ShiftAlarm {
     return ShiftAlarm(
       id: id ?? this.id,
       patternId: patternId ?? this.patternId,
+      alarmType: alarmType ?? this.alarmType,
       targetShiftTypes: targetShiftTypes ?? this.targetShiftTypes,
       time: time ?? this.time,
       title: title ?? this.title,
@@ -70,6 +114,7 @@ class ShiftAlarm {
     return {
       'id': id,
       'pattern_id': patternId,
+      'alarm_type': alarmType.name,
       'target_shift_types': targetShiftTypes.map((e) => e.name).join(','),
       'time_hour': time.hour,
       'time_minute': time.minute,
@@ -82,13 +127,33 @@ class ShiftAlarm {
   }
   
   static ShiftAlarm fromMap(Map<String, dynamic> map) {
+    final targetShiftTypesSet = (map['target_shift_types'] as String)
+        .split(',')
+        .map((name) => ShiftType.values.firstWhere((e) => e.name == name, orElse: () => ShiftType.day))
+        .toSet();
+
+    AlarmType type;
+    if (map['alarm_type'] != null) {
+      type = AlarmType.values.byName(map['alarm_type']);
+    } else {
+      // Legacy data migration: Infer type from target shifts or title
+      final title = map['title'] as String? ?? '';
+      if (targetShiftTypesSet.contains(ShiftType.night) || title.toLowerCase().contains('night')) {
+        type = AlarmType.night;
+      } else if (targetShiftTypesSet.contains(ShiftType.day) || title.toLowerCase().contains('day')) {
+        type = AlarmType.day;
+      } else if (targetShiftTypesSet.contains(ShiftType.off)) {
+        type = AlarmType.off;
+      } else {
+        type = AlarmType.day; // Fallback
+      }
+    }
+
     return ShiftAlarm(
       id: map['id'],
       patternId: map['pattern_id'],
-      targetShiftTypes: (map['target_shift_types'] as String)
-          .split(',')
-          .map((name) => ShiftType.values.firstWhere((e) => e.name == name))
-          .toSet(),
+      alarmType: type,
+      targetShiftTypes: targetShiftTypesSet,
       time: TimeOfDay(
         hour: map['time_hour'],
         minute: map['time_minute'],
@@ -114,7 +179,7 @@ class ShiftAlarm {
 class AlarmSettings {
   final bool vibration;
   final bool sound;
-  final String soundPath;
+  final AlarmTone tone;
   final double volume; // 0.0 to 1.0
   final bool snooze;
   final int snoozeDuration; // minutes
@@ -123,7 +188,7 @@ class AlarmSettings {
   const AlarmSettings({
     this.vibration = true,
     this.sound = true,
-    this.soundPath = '',
+    this.tone = AlarmTone.wakeupcall,
     this.volume = 0.8,
     this.snooze = true,
     this.snoozeDuration = 10,
@@ -133,7 +198,7 @@ class AlarmSettings {
   AlarmSettings copyWith({
     bool? vibration,
     bool? sound,
-    String? soundPath,
+    AlarmTone? tone,
     double? volume,
     bool? snooze,
     int? snoozeDuration,
@@ -142,7 +207,7 @@ class AlarmSettings {
     return AlarmSettings(
       vibration: vibration ?? this.vibration,
       sound: sound ?? this.sound,
-      soundPath: soundPath ?? this.soundPath,
+      tone: tone ?? this.tone,
       volume: volume ?? this.volume,
       snooze: snooze ?? this.snooze,
       snoozeDuration: snoozeDuration ?? this.snoozeDuration,
@@ -154,7 +219,7 @@ class AlarmSettings {
     return {
       'vibration': vibration,
       'sound': sound,
-      'sound_path': soundPath,
+      'tone': tone.name,
       'volume': volume,
       'snooze': snooze,
       'snooze_duration': snoozeDuration,
@@ -166,7 +231,10 @@ class AlarmSettings {
     return AlarmSettings(
       vibration: map['vibration'] ?? true,
       sound: map['sound'] ?? true,
-      soundPath: map['sound_path'] ?? '',
+      tone: AlarmTone.values.firstWhere(
+        (e) => e.name == map['tone'],
+        orElse: () => AlarmTone.wakeupcall
+      ),
       volume: map['volume']?.toDouble() ?? 0.8,
       snooze: map['snooze'] ?? true,
       snoozeDuration: map['snooze_duration'] ?? 10,

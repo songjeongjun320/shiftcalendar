@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../l10n/app_localizations.dart';
 import '../models/shift_alarm.dart';
-import '../models/basic_alarm.dart';
 
 class ShiftAlarmSettingsDialog extends StatefulWidget {
   final ShiftAlarm alarm;
@@ -27,14 +27,15 @@ class _ShiftAlarmSettingsDialogState extends State<ShiftAlarmSettingsDialog> {
   late int _snoozeDuration;
   late int _maxSnoozeCount;
   late bool _isActive;
-  
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
   @override
   void initState() {
     super.initState();
     
     _selectedTime = widget.alarm.time;
     _soundEnabled = widget.alarm.settings.sound;
-    _selectedTone = AlarmTone.bell; // Default, can be enhanced to match soundPath
+    _selectedTone = widget.alarm.settings.tone;
     _selectedVolume = widget.alarm.settings.volume;
     _vibrationEnabled = widget.alarm.settings.vibration;
     _snoozeEnabled = widget.alarm.settings.snooze;
@@ -42,7 +43,13 @@ class _ShiftAlarmSettingsDialogState extends State<ShiftAlarmSettingsDialog> {
     _maxSnoozeCount = widget.alarm.settings.maxSnoozeCount;
     _isActive = widget.alarm.isActive;
   }
-  
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -107,6 +114,9 @@ class _ShiftAlarmSettingsDialogState extends State<ShiftAlarmSettingsDialog> {
                           setState(() {
                             _selectedVolume = value;
                           });
+                        },
+                        onChangeEnd: (value) {
+                          _playPreviewSound();
                         },
                       ),
                     ),
@@ -229,6 +239,29 @@ class _ShiftAlarmSettingsDialogState extends State<ShiftAlarmSettingsDialog> {
     }
   }
   
+  void _playPreviewSound() async {
+    if (_soundEnabled) {
+      try {
+        await _audioPlayer.stop();
+        await _audioPlayer.setVolume(_selectedVolume);
+        final soundPath = 'sounds/${_selectedTone.soundPath}.mp3';
+        print('Playing preview sound: $soundPath at volume $_selectedVolume');
+        await _audioPlayer.play(AssetSource(soundPath));
+      } catch (e) {
+        print('Error playing preview sound: $e');
+        // Show user feedback for audio issues
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('소리 재생 중 오류가 발생했습니다: ${e.toString()}'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    }
+  }
+
   void _selectTone() {
     final l10n = AppLocalizations.of(context)!;
     showDialog(
@@ -246,6 +279,7 @@ class _ShiftAlarmSettingsDialogState extends State<ShiftAlarmSettingsDialog> {
                 setState(() {
                   _selectedTone = value;
                 });
+                _playPreviewSound();
                 Navigator.of(context).pop();
               }
             },
@@ -258,7 +292,7 @@ class _ShiftAlarmSettingsDialogState extends State<ShiftAlarmSettingsDialog> {
   void _saveSettings() {
     final updatedSettings = widget.alarm.settings.copyWith(
       sound: _soundEnabled,
-      soundPath: _selectedTone.soundPath,
+      tone: _selectedTone,
       volume: _selectedVolume,
       vibration: _vibrationEnabled,
       snooze: _snoozeEnabled,

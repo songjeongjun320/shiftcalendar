@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../l10n/app_localizations.dart';
 import '../models/basic_alarm.dart';
+import '../models/shift_alarm.dart';
 
 class BasicAlarmDialog extends StatefulWidget {
   final BasicAlarm? alarm; // null for new alarm, existing alarm for edit
@@ -20,10 +22,11 @@ class _BasicAlarmDialogState extends State<BasicAlarmDialog> {
   final _labelController = TextEditingController();
   TimeOfDay _selectedTime = TimeOfDay.now();
   Set<int> _selectedDays = <int>{};
-  AlarmTone _selectedTone = AlarmTone.bell;
+  AlarmTone _selectedTone = AlarmTone.wakeupcall;
   double _selectedVolume = 0.8;
   bool _isActive = true;
-  
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
   List<String> _getWeekdays(AppLocalizations l10n) {
     return [
       l10n.monday, l10n.tuesday, l10n.wednesday, l10n.thursday, 
@@ -53,6 +56,7 @@ class _BasicAlarmDialogState extends State<BasicAlarmDialog> {
   @override
   void dispose() {
     _labelController.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
   
@@ -172,6 +176,9 @@ class _BasicAlarmDialogState extends State<BasicAlarmDialog> {
                           _selectedVolume = value;
                         });
                       },
+                      onChangeEnd: (value) {
+                        _playPreviewSound();
+                      },
                     ),
                   ),
                   Icon(Icons.volume_up, size: 20),
@@ -236,6 +243,27 @@ class _BasicAlarmDialogState extends State<BasicAlarmDialog> {
     }
   }
   
+  void _playPreviewSound() async {
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.setVolume(_selectedVolume);
+      final soundPath = 'sounds/${_selectedTone.soundPath}.mp3';
+      print('Playing preview sound: $soundPath at volume $_selectedVolume');
+      await _audioPlayer.play(AssetSource(soundPath));
+    } catch (e) {
+      print('Error playing preview sound: $e');
+      // Show user feedback for audio issues
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('소리 재생 중 오류가 발생했습니다: ${e.toString()}'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
+
   void _selectTone() {
     final l10n = AppLocalizations.of(context)!;
     showDialog(
@@ -253,6 +281,7 @@ class _BasicAlarmDialogState extends State<BasicAlarmDialog> {
                 setState(() {
                   _selectedTone = value;
                 });
+                _playPreviewSound();
                 Navigator.of(context).pop();
               }
             },

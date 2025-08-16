@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'l10n/app_localizations.dart';
 import 'models/shift_pattern.dart';
@@ -11,9 +12,12 @@ import 'services/shift_notification_service.dart';
 import 'services/shift_storage_service.dart';
 import 'services/basic_alarm_service.dart';
 import 'services/language_service.dart';
+import 'services/alarm_diagnostic_service.dart';
+import 'services/alarm_trigger_validator.dart';
 import 'widgets/pattern_creation_dialog.dart';
 import 'widgets/basic_alarm_dialog.dart';
 import 'widgets/shift_alarm_settings_dialog.dart';
+import 'widgets/alarm_debug_screen.dart';
 
 class ShiftCalendarApp extends StatefulWidget {
   final FlutterLocalNotificationsPlugin notifications;
@@ -35,6 +39,8 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
   final _schedulingService = ShiftSchedulingService();
   late final ShiftNotificationService _notificationService;
   late final BasicAlarmService _basicAlarmService;
+  late final AlarmDiagnosticService _diagnosticService;
+  late final AlarmTriggerValidator _triggerValidator;
   final _storageService = ShiftStorageService();
   final _uuid = Uuid();
   
@@ -49,6 +55,8 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
     super.initState();
     _notificationService = ShiftNotificationService(widget.notifications, _schedulingService);
     _basicAlarmService = BasicAlarmService(widget.notifications);
+    _diagnosticService = AlarmDiagnosticService(widget.notifications);
+    _triggerValidator = AlarmTriggerValidator(widget.notifications);
     _initializeApp();
   }
   
@@ -56,8 +64,19 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
     setState(() => _isLoading = true);
     
     await _notificationService.initialize();
+    await _basicAlarmService.initialize(); // Add basic alarm service initialization
     await _loadCurrentPattern();
     await _loadBasicAlarms();
+    
+    // Start diagnostic monitoring and trigger validation
+    _diagnosticService.startDiagnosticMonitoring();
+    _triggerValidator.startValidation();
+    
+    // Debug pending alarms after initialization
+    print('=== DEBUGGING PENDING ALARMS AFTER INIT ===');
+    await _notificationService.debugPendingNotifications();
+    await _basicAlarmService.debugPendingBasicAlarms();
+    await _diagnosticService.forceDiagnosticCheck();
     
     setState(() => _isLoading = false);
   }
@@ -66,7 +85,56 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
     final activePattern = await _storageService.getActivePattern();
     
     if (activePattern != null) {
-      final alarms = await _storageService.getAlarmsForPattern(activePattern.id);
+      var alarms = await _storageService.getAlarmsForPattern(activePattern.id);
+      
+      // --- Data Migration & Cleanup Logic ---
+      bool alarmsChanged = false;
+      
+      // 1. Group alarms by type and remove duplicates, keeping the newest
+      final Map<AlarmType, List<ShiftAlarm>> groupedAlarms = {};
+      for (final alarm in alarms) {
+        groupedAlarms.putIfAbsent(alarm.alarmType, () => []).add(alarm);
+      }
+      
+      final List<ShiftAlarm> cleanedAlarms = [];
+      for (final type in groupedAlarms.keys) {
+        var group = groupedAlarms[type]!;
+        if (group.length > 1) {
+          alarmsChanged = true;
+          group.sort((a, b) => b.createdAt.compareTo(a.createdAt)); // Newest first
+          final alarmToKeep = group.first;
+          cleanedAlarms.add(alarmToKeep);
+          // Delete the older duplicates
+          for (int i = 1; i < group.length; i++) {
+            await _storageService.deleteAlarm(group[i].id);
+          }
+        } else {
+          cleanedAlarms.add(group.first);
+        }
+      }
+      
+      // 2. Check for missing default alarm types and add them
+      final existingAlarmTypes = cleanedAlarms.map((a) => a.alarmType).toSet();
+      final defaultAlarms = _createDefaultAlarms(activePattern.id);
+      
+      for (final defaultAlarm in defaultAlarms) {
+        if (!existingAlarmTypes.contains(defaultAlarm.alarmType)) {
+          await _storageService.saveAlarm(defaultAlarm);
+          cleanedAlarms.add(defaultAlarm);
+          alarmsChanged = true;
+        }
+      }
+
+      // 3. If any changes were made, reschedule notifications
+      if (alarmsChanged) {
+        alarms = cleanedAlarms; // Update the list with the cleaned/added alarms
+        await _notificationService.scheduleShiftAlarms(alarms, activePattern);
+      }
+      // --- End of Data Migration & Cleanup Logic ---
+
+      // After migration, always reschedule to keep the 30-day window fresh
+      await _notificationService.scheduleShiftAlarms(alarms, activePattern);
+
       final upcomingShifts = _schedulingService.getUpcomingShifts(activePattern);
       
       setState(() {
@@ -85,6 +153,124 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
   }
   
   Future<void> _createSamplePattern() async {
+    // Show start date selection dialog for sample pattern too
+    _showSamplePatternStartDateDialog();
+  }
+  
+  void _showSamplePatternStartDateDialog() {
+    final l10n = AppLocalizations.of(context)!;
+    DateTime selectedDate = DateTime.now().add(Duration(days: 1)); // Default to tomorrow
+    
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(l10n.patternStartsOn),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '${l10n.startDateHint}\n\n패턴: 주-주-야-야-휴-휴',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              SizedBox(height: 16),
+              
+              // Date display
+              InkWell(
+                onTap: () async {
+                  final DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: selectedDate,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(Duration(days: 365)),
+                    helpText: l10n.selectStartDate,
+                  );
+                  
+                  if (picked != null) {
+                    setDialogState(() {
+                      selectedDate = picked;
+                    });
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Theme.of(context).dividerColor),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.calendar_today, size: 20),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              DateFormat.yMMMd().format(selectedDate),
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            Text(
+                              DateFormat.EEEE().format(selectedDate),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.arrow_drop_down),
+                    ],
+                  ),
+                ),
+              ),
+              
+              SizedBox(height: 16),
+              
+              // Quick selection buttons
+              Wrap(
+                spacing: 8,
+                children: [
+                  ActionChip(
+                    label: Text(l10n.tomorrow),
+                    onPressed: () {
+                      setDialogState(() {
+                        selectedDate = DateTime.now().add(Duration(days: 1));
+                      });
+                    },
+                  ),
+                  ActionChip(
+                    label: Text(l10n.nextMonday),
+                    onPressed: () {
+                      setDialogState(() {
+                        final now = DateTime.now();
+                        final daysUntilMonday = (DateTime.monday - now.weekday) % 7;
+                        final nextMonday = now.add(Duration(days: daysUntilMonday == 0 ? 7 : daysUntilMonday));
+                        selectedDate = DateTime(nextMonday.year, nextMonday.month, nextMonday.day);
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () {
+                _createSamplePatternWithDate(selectedDate);
+                Navigator.of(context).pop();
+              },
+              child: Text(l10n.create),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Future<void> _createSamplePatternWithDate(DateTime startDate) async {
     final pattern = ShiftPattern(
       id: _uuid.v4(),
       name: 'Day-Day-Night-Night-Off-Off',
@@ -96,7 +282,7 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
         ShiftType.off,
         ShiftType.off,
       ],
-      startDate: DateTime.now(),
+      startDate: startDate, // ✅ Use user-selected date
       createdAt: DateTime.now(),
     );
     
@@ -104,37 +290,57 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
     await _storageService.setActivePattern(pattern.id);
     
     // Create sample alarms
+    final defaultAlarms = _createDefaultAlarms(pattern.id);
+    for (final alarm in defaultAlarms) {
+      await _storageService.saveAlarm(alarm);
+    }
+    
+    // Schedule notifications
+    await _notificationService.scheduleShiftAlarms(defaultAlarms, pattern);
+    
+    await _loadCurrentPattern();
+  }
+  
+  List<ShiftAlarm> _createDefaultAlarms(String patternId) {
     final dayAlarm = ShiftAlarm(
       id: _uuid.v4(),
-      patternId: pattern.id,
+      patternId: patternId,
+      alarmType: AlarmType.day,
       targetShiftTypes: {ShiftType.day},
-      time: TimeOfDay(hour: 6, minute: 0),
+      time: const TimeOfDay(hour: 6, minute: 0),
       title: 'Day Shift Alarm',
-      message: 'Time to get ready for your {shift} shift!',
-      settings: AlarmSettings(),
+      message: 'Time to get ready for your day shift!',
+      settings: const AlarmSettings(),
       createdAt: DateTime.now(),
     );
     
     final nightAlarm = ShiftAlarm(
       id: _uuid.v4(),
-      patternId: pattern.id,
+      patternId: patternId,
+      alarmType: AlarmType.night,
       targetShiftTypes: {ShiftType.night},
-      time: TimeOfDay(hour: 18, minute: 0),
+      time: const TimeOfDay(hour: 18, minute: 0),
       title: 'Night Shift Alarm',
-      message: 'Time to get ready for your {shift} shift!',
-      settings: AlarmSettings(),
+      message: 'Time to get ready for your night shift!',
+      settings: const AlarmSettings(),
+      createdAt: DateTime.now(),
+    );
+
+    final offAlarm = ShiftAlarm(
+      id: _uuid.v4(),
+      patternId: patternId,
+      alarmType: AlarmType.off,
+      targetShiftTypes: {ShiftType.off},
+      time: const TimeOfDay(hour: 9, minute: 0),
+      title: 'Day Off Alarm',
+      message: 'Enjoy your day off!',
+      settings: const AlarmSettings(),
       createdAt: DateTime.now(),
     );
     
-    await _storageService.saveAlarm(dayAlarm);
-    await _storageService.saveAlarm(nightAlarm);
-    
-    // Schedule notifications
-    await _notificationService.scheduleShiftAlarms([dayAlarm, nightAlarm], pattern);
-    
-    await _loadCurrentPattern();
+    return [dayAlarm, nightAlarm, offAlarm];
   }
-  
+
   Future<void> _clearAllData() async {
     await _notificationService.cancelAllAlarms();
     await _storageService.clearAllData();
@@ -155,40 +361,26 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
     );
   }
 
-  Future<void> _createCustomPattern(String name, List<ShiftType> cycle) async {
+  Future<void> _createCustomPattern(String name, List<ShiftType> cycle, DateTime startDate) async {
     final pattern = ShiftPattern(
       id: _uuid.v4(),
       name: name,
       cycle: cycle,
-      startDate: DateTime.now(),
+      startDate: startDate, // ✅ Use user-selected date
       createdAt: DateTime.now(),
     );
     
     await _storageService.savePattern(pattern);
     await _storageService.setActivePattern(pattern.id);
     
-    // Create default alarms for each shift type in the pattern
-    final uniqueShiftTypes = cycle.where((type) => type != ShiftType.off).toSet();
-    
-    for (final shiftType in uniqueShiftTypes) {
-      final defaultTime = shiftType == ShiftType.night ? TimeOfDay(hour: 18, minute: 0) : TimeOfDay(hour: 6, minute: 0);
-      final alarm = ShiftAlarm(
-        id: _uuid.v4(),
-        patternId: pattern.id,
-        targetShiftTypes: {shiftType},
-        time: defaultTime,
-        title: '${shiftType.localizedFullName(context)}',
-        message: 'Time to get ready for your ${shiftType.localizedDisplayName(context).toLowerCase()} shift!',
-        settings: AlarmSettings(),
-        createdAt: DateTime.now(),
-      );
-      
+    // Create default alarms for the new pattern
+    final defaultAlarms = _createDefaultAlarms(pattern.id);
+    for (final alarm in defaultAlarms) {
       await _storageService.saveAlarm(alarm);
     }
     
     // Schedule notifications
-    final allAlarms = await _storageService.getAlarmsForPattern(pattern.id);
-    await _notificationService.scheduleShiftAlarms(allAlarms, pattern);
+    await _notificationService.scheduleShiftAlarms(defaultAlarms, pattern);
     
     await _loadCurrentPattern();
   }
@@ -229,9 +421,8 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
     
     // Show confirmation
     if (mounted) {
-      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Alarm settings updated'), // Can be localized if needed
           duration: Duration(seconds: 2),
         ),
@@ -239,38 +430,6 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
     }
   }
   
-  Future<void> _editAlarmTime(ShiftAlarm alarm) async {
-    final l10n = AppLocalizations.of(context)!;
-    final TimeOfDay? newTime = await showTimePicker(
-      context: context,
-      initialTime: alarm.time,
-      helpText: '${alarm.title} ${l10n.selectAlarmTime}',
-    );
-    
-    if (newTime != null) {
-      final updatedAlarm = alarm.copyWith(time: newTime);
-      await _storageService.saveAlarm(updatedAlarm);
-      
-      if (_currentPattern != null) {
-        // Reschedule all alarms for this pattern
-        final allAlarms = await _storageService.getAlarmsForPattern(_currentPattern!.id);
-        await _notificationService.scheduleShiftAlarms(allAlarms, _currentPattern!);
-      }
-      
-      await _loadCurrentPattern();
-      
-      // Show confirmation
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${l10n.alarmTimeUpdated} ${newTime.format(context)}'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-    }
-  }
 
   void _showBasicAlarmDialog([BasicAlarm? alarm]) {
     showDialog(
@@ -283,9 +442,24 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
   }
 
   Future<void> _saveBasicAlarm(BasicAlarm alarm) async {
+    print('=== SAVING BASIC ALARM ===');
+    print('Alarm: ${alarm.label} at ${alarm.time.format(context)}');
+    print('Active: ${alarm.isActive}');
+    print('Repeat days: ${alarm.repeatDays}');
+    
     await _storageService.saveBasicAlarm(alarm);
-    await _basicAlarmService.scheduleBasicAlarm(alarm);
+    print('Basic alarm saved to storage');
+    
+    if (alarm.isActive) {
+      print('Scheduling basic alarm...');
+      await _basicAlarmService.scheduleBasicAlarm(alarm);
+      print('Basic alarm scheduling completed');
+    } else {
+      print('Alarm is inactive, skipping scheduling');
+    }
+    
     await _loadBasicAlarms();
+    print('=== BASIC ALARM SAVE COMPLETE ===');
     
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
@@ -314,7 +488,10 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
   }
 
   Future<void> _deleteBasicAlarm(BasicAlarm alarm) async {
+    if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -338,15 +515,13 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
       await _storageService.deleteBasicAlarm(alarm.id);
       await _loadBasicAlarms();
       
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.alarmDeleted),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.alarmDeleted),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -410,6 +585,13 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
   }
   
   @override
+  void dispose() {
+    _diagnosticService.stopDiagnosticMonitoring();
+    _triggerValidator.stopValidation();
+    super.dispose();
+  }
+  
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     
@@ -418,6 +600,20 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
         title: Text(l10n.appTitle),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
+          IconButton(
+            icon: Icon(Icons.bug_report),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => AlarmDebugScreen(
+                    diagnosticService: _diagnosticService,
+                    triggerValidator: _triggerValidator,
+                  ),
+                ),
+              );
+            },
+            tooltip: 'Alarm Diagnostics',
+          ),
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: _showSettingsDialog,
@@ -553,45 +749,6 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
     );
   }
   
-  Widget _buildCurrentShiftCard() {
-    final l10n = AppLocalizations.of(context)!;
-    final currentShift = _schedulingService.getCurrentShift(_currentPattern!);
-    
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.today, color: Theme.of(context).colorScheme.primary),
-                SizedBox(width: 8),
-                Text(
-                  l10n.todayShift,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: _getShiftColor(currentShift),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                currentShift.localizedDisplayName(context),
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
   
   Widget _buildAlarmsCard() {
     final l10n = AppLocalizations.of(context)!;
@@ -618,9 +775,20 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
             else
               ..._getSortedAlarms().map((alarm) => ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: Switch(
-                      value: alarm.isActive,
-                      onChanged: (_) => _toggleAlarm(alarm),
+                    leading: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Switch(
+                          value: alarm.isActive,
+                          onChanged: (_) => _toggleAlarm(alarm),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.brightness_1,
+                          color: _getAlarmTypeColor(alarm.alarmType),
+                          size: 16,
+                        ),
+                      ],
                     ),
                     title: Text(alarm.title),
                     subtitle: Text(
@@ -819,23 +987,6 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
               icon: Icon(Icons.clear_all),
               label: Text(l10n.clearAllData),
             ),
-            SizedBox(height: 8),
-            FutureBuilder<Map<String, int>>(
-              future: _notificationService.getNotificationStats(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final stats = snapshot.data!;
-                  return Text(
-                    '${l10n.scheduledNotifications(stats['total'] ?? 0)}\n'
-                    '${l10n.dayShiftAlarms(stats['day_shifts'] ?? 0)}\n'
-                    '${l10n.nightShiftAlarms(stats['night_shifts'] ?? 0)}',
-                    style: Theme.of(context).textTheme.bodySmall,
-                    textAlign: TextAlign.center,
-                  );
-                }
-                return SizedBox.shrink();
-              },
-            ),
           ],
         ),
       ),
@@ -845,32 +996,38 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
   List<ShiftAlarm> _getSortedAlarms() {
     final sorted = List<ShiftAlarm>.from(_currentAlarms);
     sorted.sort((a, b) {
-      // Sort by shift type priority (day -> night -> off)
-      final aShiftPriority = _getShiftTypePriority(a.targetShiftTypes.first);
-      final bShiftPriority = _getShiftTypePriority(b.targetShiftTypes.first);
-      if (aShiftPriority != bShiftPriority) {
-        return aShiftPriority.compareTo(bShiftPriority);
+      // Sort by alarm type priority (day -> night -> off)
+      final aPriority = a.alarmType.index;
+      final bPriority = b.alarmType.index;
+      if (aPriority != bPriority) {
+        return aPriority.compareTo(bPriority);
       }
       
       // Then by time
       final aMinutes = a.time.hour * 60 + a.time.minute;
       final bMinutes = b.time.hour * 60 + b.time.minute;
-      return aMinutes.compareTo(bMinutes);
+      if (aMinutes != bMinutes) {
+        return aMinutes.compareTo(bMinutes);
+      }
+      
+      // Finally, for stable sorting when shift type and time are equal,
+      // sort by creation time to maintain consistent position
+      return a.createdAt.compareTo(b.createdAt);
     });
     return sorted;
   }
   
-  int _getShiftTypePriority(ShiftType shiftType) {
-    switch (shiftType) {
-      case ShiftType.day:
-        return 0;
-      case ShiftType.night:
-        return 1;
-      case ShiftType.off:
-        return 2;
+  Color _getAlarmTypeColor(AlarmType alarmType) {
+    switch (alarmType) {
+      case AlarmType.day:
+        return Colors.orange.shade400;
+      case AlarmType.night:
+        return Colors.indigo.shade400;
+      case AlarmType.off:
+        return Colors.green.shade400;
     }
   }
-  
+
   Color _getShiftColor(ShiftType shiftType) {
     switch (shiftType) {
       case ShiftType.day:

@@ -65,6 +65,13 @@
   "classic": "클래식",
   "gentle": "부드러움",
   "radar": "레이더",
+  "annoyingAlarm": "짜증나는 알람",
+  "cinematicEpicTrailer": "영화 예고편",
+  "emergencyAlarm": "비상 경보",
+  "firefighterAlarm": "소방관 알람",
+  "funnyAlarm": "재미있는 알람",
+  "gentleAcoustic": "부드러운 어쿠스틱",
+  "wakeupCall": "모닝콜",
   
   "deleteAlarm": "알람 삭제",
   "deleteAlarmConfirm": "정말로 삭제하시겠습니까",
@@ -74,10 +81,6 @@
   "alarmSavedInactive": "알람이 저장되었습니다 (비활성화)",
   
   "clearAllData": "모든 데이터 지우기",
-  "scheduledNotifications": "예약된 알림: {count}개",
-  "dayShiftAlarms": "주간 근무 알람: {count}개",
-  "nightShiftAlarms": "야간 근무 알람: {count}개",
-  
   "noAlarmsConfigured": "구성된 알람이 없습니다",
   "noBasicAlarmsConfigured": "구성된 기본 알람이 없습니다",
   
@@ -94,7 +97,7 @@
   "createShiftPattern": "교대 패턴 만들기",
   
   "selectAlarmTime": "알람 시간 선택",
-  "selectAlarmTone": "알람 소리 선택",
+  "selectAlarmTone": "알람음 선택",
   "editAlarmTimeFor": "{title}의 알람 시간을 선택하세요",
   
   "settings": "설정",
@@ -107,5 +110,12 @@
   "sound": "소리",
   "vibration": "진동",
   "snooze": "다시알림",
-  "alarmSettingsUpdated": "알람 설정이 업데이트되었습니다"
+  "alarmSettingsUpdated": "알람 설정이 업데이트되었습니다",
+  "patternStartDate": "패턴 시작일",
+  "selectStartDate": "시작일 선택",
+  "startDateHint": "이 패턴을 언제부터 시작할까요?",
+  "tomorrow": "내일",
+  "nextMonday": "다음 주 월요일",
+  "chooseDate": "날짜 선택",
+  "patternStartsOn": "패턴 시작일"
 }

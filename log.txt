@@ -1,0 +1,35 @@
+I/flutter ( 9303): === BASIC ALARM SCHEDULING COMPLETED ===
+I/flutter ( 9303): Basic alarm scheduling completed
+I/flutter ( 9303): === BASIC ALARM SAVE COMPLETE ===
+I/flutter ( 9303): 🔍 Validator check at 00:54:00
+I/flutter ( 9303): 🎯 ALARM DUE NOW!
+I/flutter ( 9303):    ID: 753854853
+I/flutter ( 9303):    Title: 새 알람
+I/flutter ( 9303):    Scheduled: 2025-08-15 00:54:00.000
+I/flutter ( 9303):    Time difference: 0 seconds
+I/flutter ( 9303): ✅ No missed or upcoming alarms detected
+D/InsetsController( 9303): hide(ime(), fromIme=false)
+I/ImeTracker( 9303): com.shiftcalendar.shiftcalendar:d65d9b15: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+I/flutter ( 9303): 🕐 DIAGNOSTIC CHECK: 00:54 (00:54)
+I/flutter ( 9303): 📋 Total pending notifications: 32
+I/flutter ( 9303): ⏰ Alarm notifications: 32
+I/flutter ( 9303): ⏰ ALARM DUE NOW!
+I/flutter ( 9303):    Notification ID: 753854853
+I/flutter ( 9303):    Title: 새 알람
+I/flutter ( 9303):    Scheduled: 2025-08-15 00:54:00.000
+I/flutter ( 9303): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 9303):    Notification ID: 753854853
+I/flutter ( 9303):    Title: 새 알람
+I/flutter ( 9303):    Expected time: 2025-08-15 00:54:00.000
+I/flutter ( 9303):    Current time: 2025-08-15 00:54:30.284549
+I/flutter ( 9303): 🧪 Testing manual trigger for notification 753854853
+I/flutter ( 9303): 🔍 Validator check at 00:54:30
+I/flutter ( 9303): 🎯 ALARM DUE NOW!
+I/flutter ( 9303):    ID: 753854853
+I/flutter ( 9303):    Title: 새 알람
+I/flutter ( 9303):    Scheduled: 2025-08-15 00:54:00.000
+I/flutter ( 9303):    Time difference: 30 seconds
+I/flutter ( 9303): ✅ No missed or upcoming alarms detected
+I/flutter ( 9303): ✅ Manual test notification sent successfully
+D/InsetsController( 9303): hide(ime(), fromIme=false)
+I/ImeTracker( 9303): com.shiftcalendar.shiftcalendar:5033b720: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN

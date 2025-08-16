@@ -1,6 +1,7 @@
 import '../models/shift_alarm.dart';
 import '../models/shift_pattern.dart';
 import '../models/shift_type.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 class ScheduledNotification {
   final int id;
@@ -30,7 +31,7 @@ class ShiftSchedulingService {
     ShiftPattern pattern,
   ) async {
     final notifications = <ScheduledNotification>[];
-    final now = DateTime.now();
+    final now = tz.TZDateTime.now(tz.local);
     final horizon = now.add(Duration(days: _schedulingHorizonDays));
     
     int notificationCount = 0;
@@ -39,10 +40,12 @@ class ShiftSchedulingService {
          date.isBefore(horizon) && notificationCount < _maxNotificationsPerAlarm; 
          date = date.add(Duration(days: 1))) {
       
-      final shiftType = pattern.getShiftForDate(date);
+      final shiftType = pattern.getShiftForDate(date.toLocal());
       
       if (alarm.targetShiftTypes.contains(shiftType)) {
-        final scheduledDateTime = DateTime(
+        // Create timezone-aware scheduled time
+        final scheduledDateTime = tz.TZDateTime(
+          tz.local,
           date.year, 
           date.month, 
           date.day,
@@ -53,9 +56,9 @@ class ShiftSchedulingService {
         // Only schedule if in the future
         if (scheduledDateTime.isAfter(now)) {
           notifications.add(ScheduledNotification(
-            id: _generateNotificationId(alarm.id, date),
+            id: _generateNotificationId(alarm.id, date.toLocal()),
             alarmId: alarm.id,
-            scheduledTime: scheduledDateTime,
+            scheduledTime: scheduledDateTime.toLocal(), // Convert back to DateTime for compatibility
             title: alarm.title,
             message: _formatMessage(alarm.message, shiftType),
             shiftType: shiftType,
@@ -90,7 +93,7 @@ class ShiftSchedulingService {
   
   /// Get current shift status for a pattern
   ShiftType getCurrentShift(ShiftPattern pattern) {
-    return pattern.getShiftForDate(DateTime.now());
+    return pattern.getShiftForDate(tz.TZDateTime.now(tz.local).toLocal());
   }
   
   /// Get upcoming shifts within the scheduling horizon
@@ -149,13 +152,17 @@ class ShiftSchedulingService {
   
   /// Generate unique but deterministic notification ID
   int _generateNotificationId(String alarmId, DateTime date) {
-    final combined = '$alarmId${date.year}${date.month}${date.day}';
-    return combined.hashCode.abs() % 2147483647; // Max int32
+    // Use a more unique combination to reduce collisions
+    final timestamp = date.millisecondsSinceEpoch ~/ (1000 * 60 * 60 * 24); // Days since epoch
+    final alarmHash = alarmId.hashCode.abs();
+    final combined = (alarmHash + timestamp) % 2147483647;
+    print('Generated notification ID: $combined for alarm $alarmId on ${date.toString().substring(0, 10)}');
+    return combined;
   }
   
   /// Normalize date to start of day
-  DateTime _normalizeDate(DateTime date) {
-    return DateTime(date.year, date.month, date.day);
+  tz.TZDateTime _normalizeDate(tz.TZDateTime date) {
+    return tz.TZDateTime(tz.local, date.year, date.month, date.day);
   }
   
   /// Validate if a pattern has valid alarm setup
