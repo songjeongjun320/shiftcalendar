@@ -158,10 +158,9 @@ class ShiftNotificationService {
       try {
         print('📋 Processing ACTIVE ShiftAlarm: ${alarm.title}');
         
-        // This will create multiple BasicAlarms for upcoming shift dates
-        // Each BasicAlarm will be scheduled for immediate dates (today/tomorrow)
-        // instead of complex future calculations
-        final createdBasicAlarms = await _shiftAlarmManager.scheduleShiftAlarmsAsBasicAlarms(
+        // OPTIMIZED: Use weekly recurring pattern instead of 30+ individual alarms
+        // This reduces total pending notifications from 60+ to ~10-15 max
+        final createdBasicAlarms = await _shiftAlarmManager.scheduleShiftAlarmsAsWeeklyRecurring(
           alarm, 
           pattern,
         );

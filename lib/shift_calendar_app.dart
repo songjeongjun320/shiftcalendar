@@ -12,6 +12,7 @@ import 'services/shift_scheduling_service.dart';
 import 'services/shift_notification_service.dart';
 import 'services/shift_storage_service.dart';
 import 'services/basic_alarm_service.dart';
+import 'services/shift_alarm_manager.dart';
 import 'services/language_service.dart';
 import 'services/alarm_diagnostic_service.dart';
 import 'services/alarm_trigger_validator.dart';
@@ -264,9 +265,19 @@ class _ShiftCalendarAppState extends State<ShiftCalendarApp> {
     await _storageService.saveAlarm(updatedAlarm);
     
     if (_currentPattern != null) {
-      // Reschedule all alarms for this pattern
-      final allAlarms = await _storageService.getAlarmsForPattern(_currentPattern!.id);
-      await _notificationService.scheduleShiftAlarms(allAlarms, _currentPattern!);
+      // CRITICAL FIX: Only update the specific alarm that was modified
+      // This prevents recreating all alarms and causing duplicates
+      print('🔄 Updating single ShiftAlarm: ${updatedAlarm.title}');
+      
+      // Create a single-alarm list and use the existing schedule method
+      // but first cancel only this specific alarm
+      await _notificationService.cancelAlarm(updatedAlarm.id);
+      print('🗑️ Cancelled existing notifications for alarm: ${updatedAlarm.title}');
+      
+      // Now schedule only this updated alarm
+      await _notificationService.scheduleShiftAlarms([updatedAlarm], _currentPattern!);
+      
+      print('✅ Successfully updated single ShiftAlarm: ${updatedAlarm.title}');
     }
     
     await _loadCurrentPattern();
