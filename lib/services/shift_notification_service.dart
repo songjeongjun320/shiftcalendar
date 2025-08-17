@@ -146,6 +146,11 @@ class ShiftNotificationService {
     print('   Active alarms: ${alarms.where((a) => a.isActive).length}');
     print('   Inactive alarms: ${alarms.where((a) => !a.isActive).length}');
     
+    // CRITICAL FIX: Force cleanup of ALL existing alarms first
+    // This addresses the orphaned notification problem
+    print('🧹 FORCE CLEANUP: Removing ALL existing basic alarms to prevent duplicates...');
+    await _shiftAlarmManager.forceCleanupAllShiftAlarms();
+    
     // IMPORTANT: Cancel BasicAlarms for ALL alarms (active and inactive)
     // This ensures that disabled alarms are properly cancelled
     for (final alarm in alarms) {
@@ -158,9 +163,9 @@ class ShiftNotificationService {
       try {
         print('📋 Processing ACTIVE ShiftAlarm: ${alarm.title}');
         
-        // OPTIMIZED: Use weekly recurring pattern instead of 30+ individual alarms
-        // This reduces total pending notifications from 60+ to ~10-15 max
-        final createdBasicAlarms = await _shiftAlarmManager.scheduleShiftAlarmsAsWeeklyRecurring(
+        // CORRECTED: Use shift pattern-based scheduling (7-14 days)
+        // This respects the cyclical nature of shift patterns
+        final createdBasicAlarms = await _shiftAlarmManager.scheduleShiftAlarmsAsBasicAlarms(
           alarm, 
           pattern,
         );
@@ -273,12 +278,14 @@ class ShiftNotificationService {
       // IMPORTANT: Also schedule with ReliableAlarmService for guaranteed triggering
       try {
         print('🌉 Scheduling with ReliableAlarmService as backup...');
-        final reliableSuccess = await AlarmServiceBridge.scheduleWithReliableService(
+        final reliableSuccess = await AlarmServiceBridge.scheduleBasicAlarmWithReliableService(
           id: notification.id,
           scheduledTime: notification.scheduledTime,
           title: notification.title,
           message: notification.message,
-          settings: alarm.settings,
+          customTone: alarm.settings.tone.soundPath,
+          customVolume: alarm.settings.volume,
+          customVibration: alarm.settings.vibration,
         );
         
         if (reliableSuccess) {

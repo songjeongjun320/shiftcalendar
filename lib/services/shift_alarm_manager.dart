@@ -1,3 +1,4 @@
+import 'dart:convert';
 import '../models/shift_alarm.dart';
 import '../models/shift_pattern.dart';
 import '../models/shift_type.dart';
@@ -45,17 +46,17 @@ class ShiftAlarmManager {
     await cancelShiftAlarms(shiftAlarm.id);
     print('   🗑️ Cancelled existing alarms for ${shiftAlarm.title}');
     
-    // OPTIMIZED: Find only next 3-5 shift dates instead of 30 days
-    // This reduces pending notifications from 60+ to under 15 total
+    // OPTIMIZED: Find next 14 days worth of shifts (balanced approach)
+    // This respects shift patterns while keeping alarm count reasonable
     final upcomingShifts = pattern.getUpcomingShifts(
       shiftAlarm.targetShiftTypes, 
-      7 // Only next 7 days - much more efficient
+      14 // 2 weeks ahead - covers full cycle patterns
     );
     
     print('   Found ${upcomingShifts.length} upcoming shift dates for target types: ${shiftAlarm.targetShiftTypes.map((t) => t.displayName).join(', ')}');
     
-    // Create BasicAlarm for each shift occurrence (max 5 per alarm type)
-    for (int i = 0; i < upcomingShifts.length && i < 5; i++) { // Limit to 5 alarms max per type
+    // Create BasicAlarm for each shift occurrence (max 10 per alarm type for 2 weeks)
+    for (int i = 0; i < upcomingShifts.length && i < 10; i++) { // Limit to 10 alarms max per type
       final shiftDate = upcomingShifts[i];
       final actualShiftType = pattern.getShiftForDate(shiftDate);
       
@@ -203,27 +204,182 @@ class ShiftAlarmManager {
     return weekdays[weekday - 1];
   }
   
+  /// Helper method: Force cancel any notifications that match shift alarm ID pattern
+  Future<void> _forceCancelShiftNotifications(String shiftAlarmId) async {
+    print('   🧹 Force cancelling notifications containing: $shiftAlarmId');
+    
+    // Use the BasicAlarmService method to get all pending notifications
+    final allPending = await _basicAlarmService.getPendingBasicAlarms();
+    
+    for (final request in allPending) {
+      // Check if this notification is related to our shift alarm
+      bool shouldCancel = false;
+      
+      if (request.payload != null) {
+        try {
+          final payload = jsonDecode(request.payload!);
+          final alarmId = payload['alarmId'] as String?;
+          if (alarmId != null && alarmId.contains(shiftAlarmId)) {
+            shouldCancel = true;
+          }
+        } catch (e) {
+          // If payload parsing fails, check title/body
+          if (request.title != null && request.title!.contains(shiftAlarmId)) {
+            shouldCancel = true;
+          }
+        }
+      }
+      
+      if (shouldCancel) {
+        print('     🧹 Force cancelling notification: ${request.id} (${request.title})');
+        await _basicAlarmService.cancelBasicAlarm(request.id.toString());
+      }
+    }
+  }
+  
+  /// Helper method: Count remaining notifications for a shift alarm
+  Future<int> _countRemainingShiftNotifications(String shiftAlarmId) async {
+    final allPending = await _basicAlarmService.getPendingBasicAlarms();
+    int count = 0;
+    
+    for (final request in allPending) {
+      if (request.payload != null) {
+        try {
+          final payload = jsonDecode(request.payload!);
+          final alarmId = payload['alarmId'] as String?;
+          if (alarmId != null && alarmId.contains(shiftAlarmId)) {
+            count++;
+          }
+        } catch (e) {
+          // If payload parsing fails, check title
+          if (request.title != null && request.title!.contains(shiftAlarmId)) {
+            count++;
+          }
+        }
+      }
+    }
+    
+    return count;
+  }
+  
   /// Cancel all BasicAlarms associated with a ShiftAlarm
+  /// ENHANCED: Also searches pending notifications directly for orphaned alarms
   Future<void> cancelShiftAlarms(String shiftAlarmId) async {
     print('🗑️ Cancelling BasicAlarms for ShiftAlarm: $shiftAlarmId');
     
-    // Get all stored BasicAlarms
+    // Method 1: Cancel from stored BasicAlarms
     final allBasicAlarms = await _basicAlarmService.getAllBasicAlarms();
-    
-    // Find and cancel alarms that belong to this shift alarm
-    // Updated to match both old and new ID formats:
-    // Old: ${shiftAlarm.id}_${alarmType.value}_${dateStr}_${timeStr}
-    // New: ${shiftAlarm.id}_weekly_${alarmType.value}_${weekday}
     final shiftBasicAlarms = allBasicAlarms.where(
       (alarm) => alarm.id.startsWith('${shiftAlarmId}_')
     ).toList();
     
+    print('   Found ${shiftBasicAlarms.length} stored BasicAlarms to cancel');
     for (final alarm in shiftBasicAlarms) {
+      print('     - Will cancel: ${alarm.id} (${alarm.label})');
       await _basicAlarmService.cancelBasicAlarm(alarm.id);
-      print('   ✅ Cancelled: ${alarm.label} (ID: ${alarm.id})');
+      print('   ✅ Cancelled stored: ${alarm.label}');
     }
     
-    print('✅ Cancelled ${shiftBasicAlarms.length} BasicAlarms for ShiftAlarm: $shiftAlarmId');
+    // Method 2: CRITICAL FIX - Also check pending notifications directly
+    // This catches orphaned notifications that aren't in SharedPreferences
+    final pendingAlarms = await _basicAlarmService.getPendingBasicAlarms();
+    int orphanedCount = 0;
+    
+    for (final pending in pendingAlarms) {
+      if (pending.payload != null) {
+        try {
+          final payload = jsonDecode(pending.payload!);
+          final pendingAlarmId = payload['alarmId'] as String?;
+          
+          // Check if this notification belongs to our ShiftAlarm
+          if (pendingAlarmId != null && pendingAlarmId.startsWith('${shiftAlarmId}_')) {
+            print('   🚨 Found orphaned notification: ${pending.id} for alarm ${pendingAlarmId}');
+            await _basicAlarmService.cancelBasicAlarm(pendingAlarmId);
+            orphanedCount++;
+          }
+        } catch (e) {
+          // Invalid payload, skip
+        }
+      }
+    }
+    
+    // Method 3: CRITICAL FIX - Force cancel any remaining notifications that contain shift ID
+    // This is an aggressive cleanup for notifications that might be orphaned
+    await _forceCancelShiftNotifications(shiftAlarmId);
+    int aggressiveCount = await _countRemainingShiftNotifications(shiftAlarmId);
+    
+    if (orphanedCount > 0) {
+      print('   🧹 Cleaned up $orphanedCount orphaned notifications');
+    }
+    if (aggressiveCount > 0) {
+      print('   🧹 Aggressive cleanup: $aggressiveCount additional notifications');
+    }
+    
+    final totalCancelled = shiftBasicAlarms.length + orphanedCount + aggressiveCount;
+    print('✅ Cancelled $totalCancelled total alarms for ShiftAlarm: $shiftAlarmId');
+  }
+  
+  /// EMERGENCY CLEANUP: Force remove ALL basic alarms to solve orphaned notification problem
+  Future<void> forceCleanupAllShiftAlarms() async {
+    print('🚨 FORCE CLEANUP: Removing ALL basic alarms...');
+    
+    try {
+      // Method 1: Cancel all stored BasicAlarms
+      await _basicAlarmService.cancelAllBasicAlarms();
+      print('   ✅ Cancelled all stored BasicAlarms');
+      
+      // Method 2: Get current pending count for diagnosis
+      final initialPending = await _basicAlarmService.getPendingBasicAlarms();
+      print('   📊 Current pending notifications: ${initialPending.length}');
+      
+      // Method 3: Cancel all pending notifications that look like shift alarms
+      final allPending = await _basicAlarmService.getPendingBasicAlarms();
+      int forceCancelledCount = 0;
+      
+      for (final pending in allPending) {
+        if (pending.payload != null) {
+          try {
+            final payload = jsonDecode(pending.payload!);
+            final alarmId = payload['alarmId'] as String?;
+            
+            // If it looks like a shift alarm (contains UUID pattern), force cancel it
+            if (alarmId != null && (alarmId.contains('_basic_') || alarmId.contains('_weekly_') || alarmId.length > 30)) {
+              print('   🧹 Force cancelling: ${pending.id} (${alarmId})');
+              // Use the BasicAlarmService method to cancel by specific alarm ID
+              await _basicAlarmService.cancelBasicAlarm(alarmId);
+              forceCancelledCount++;
+            }
+          } catch (e) {
+            // If payload parsing fails but looks like alarm, try direct cancellation
+            if (pending.title != null && (
+                pending.title!.contains('Shift Alarm') || 
+                pending.title!.contains('ALARM TRIGGER') ||
+                pending.title!.contains('Off') ||
+                pending.title!.contains('Day') ||
+                pending.title!.contains('Night')
+            )) {
+              print('   🧹 Force cancelling by pattern: ${pending.id} (${pending.title})');
+              await _basicAlarmService.cancelBasicAlarm(pending.id.toString());
+              forceCancelledCount++;
+            } else {
+              print('   ⚠️ Skipping malformed notification: ${pending.id} - $e');
+            }
+          }
+        }
+      }
+      
+      // Method 4: Final verification count
+      final finalPending = await _basicAlarmService.getPendingBasicAlarms();
+      print('   📊 Final pending notifications: ${finalPending.length}');
+      
+      print('   🧹 Force cancelled $forceCancelledCount pending notifications');
+      print('   📉 Reduced from ${initialPending.length} to ${finalPending.length} notifications');
+      print('✅ FORCE CLEANUP completed successfully');
+      
+    } catch (e) {
+      print('❌ Error during force cleanup: $e');
+      print('⚠️ Continuing anyway...');
+    }
   }
   
   /// Update ShiftAlarm by recreating associated BasicAlarms

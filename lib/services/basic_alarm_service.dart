@@ -8,6 +8,7 @@ import '../models/basic_alarm.dart';
 import '../models/alarm_enums.dart';
 import '../main.dart';
 import 'alarm_service_bridge.dart';
+import 'cycle_alarm_manager.dart';
 
 class BasicAlarmService {
   final FlutterLocalNotificationsPlugin _notifications;
@@ -16,12 +17,20 @@ class BasicAlarmService {
   // Timer tracking for cleanup
   static final Map<String, Timer> _activeTimers = {};
   
+  // 🔄 Cycle-based alarm management
+  late final CycleAlarmManager _cycleManager;
+  
   // Notification channel constants
   static const String _channelId = 'basic_alarm_channel';
   static const String _channelName = 'Basic Alarms';
   static const String _channelDescription = 'General purpose alarms';
   
-  BasicAlarmService(this._notifications);
+  BasicAlarmService(this._notifications) {
+    _cycleManager = CycleAlarmManager(this);
+  }
+  
+  /// 🔄 Get access to cycle manager for external operations
+  CycleAlarmManager get cycleManager => _cycleManager;
   
   /// Initialize the basic alarm service and create notification channels
   Future<void> initialize() async {
@@ -126,7 +135,7 @@ class BasicAlarmService {
     
     // CRITICAL FIX: Check for duplicate alarms before scheduling
     final existingAlarms = await getPendingBasicAlarms();
-    final duplicateCount = existingAlarms.where((req) {
+    final duplicates = existingAlarms.where((req) {
       if (req.payload == null) return false;
       try {
         final payload = jsonDecode(req.payload!);
@@ -134,10 +143,25 @@ class BasicAlarmService {
       } catch (e) {
         return false;
       }
-    }).length;
+    }).toList();
     
-    if (duplicateCount > 0) {
-      print('⚠️ Found $duplicateCount existing notifications for alarm ${alarm.id}');
+    if (duplicates.isNotEmpty) {
+      print('⚠️ Found ${duplicates.length} existing notifications for alarm ${alarm.id}');
+      print('   🚫 DUPLICATE PREVENTION: Will cancel existing notifications first');
+      
+      // Force cancel all existing duplicates before scheduling new one
+      for (final duplicate in duplicates) {
+        try {
+          final payload = jsonDecode(duplicate.payload!);
+          final existingAlarmId = payload['alarmId'];
+          print('     - Cancelling duplicate notification ${duplicate.id} for alarm $existingAlarmId');
+          await cancelBasicAlarm(existingAlarmId);
+        } catch (e) {
+          print('     - Failed to cancel duplicate: $e');
+        }
+      }
+      
+      print('   ✅ Removed ${duplicates.length} duplicate notifications');
     }
     
     try {
@@ -223,38 +247,10 @@ class BasicAlarmService {
       payload: payload,
     );
 
-    // Schedule automatic alarm screen trigger
+    // Schedule alarm screen trigger for automatic alarm screen opening
     await _scheduleAlarmScreenTrigger(alarm, scheduledDate, payload);
     
-    // TEMPORARY: Disable ReliableAlarmService backup due to JSON parsing issues
-    // The notification and alarm screen trigger should be sufficient for now
-    print('ℹ️ ReliableAlarmService backup temporarily disabled');
-    print('✅ Using notification + alarm screen trigger approach instead');
-    
-    // TODO: Re-enable once alarm package JSON parsing issues are resolved
-    /*
-    try {
-      print('🌉 Scheduling with ReliableAlarmService using BasicAlarm settings...');
-      final reliableSuccess = await AlarmServiceBridge.scheduleBasicAlarmWithReliableService(
-        id: alarm.id.hashCode,
-        scheduledTime: scheduledDate,
-        title: alarm.label,
-        message: 'Time to wake up!',
-        customTone: 'sounds/${alarm.tone.soundPath}.mp3',
-        customVolume: alarm.volume,
-        customVibration: true,
-      );
-      
-      if (reliableSuccess) {
-        print('✅ Reliable alarm backup scheduled successfully with user settings');
-      } else {
-        print('⚠️ Failed to schedule reliable alarm backup');
-      }
-    } catch (e) {
-      print('❌ Error scheduling reliable alarm backup: $e');
-      print('⚠️ Continuing with notification-only approach');
-    }
-    */
+    print('✅ Scheduled one-time alarm: ${alarm.label} for $scheduledDate');
   }
   
   Future<void> _scheduleRecurringAlarm(BasicAlarm alarm) async {
@@ -312,34 +308,10 @@ class BasicAlarmService {
         payload: payload,
       );
 
-      // Schedule automatic alarm screen trigger
+      // Schedule alarm screen trigger for automatic alarm screen opening
       await _scheduleAlarmScreenTrigger(alarm, scheduledTZ, payload);
       
-      // IMPORTANT: Also schedule with ReliableAlarmService for guaranteed triggering
-      try {
-        print('🌉 Scheduling recurring alarm with ReliableAlarmService using BasicAlarm settings...');
-        final reliableSuccess = await AlarmServiceBridge.scheduleBasicAlarmWithReliableService(
-          id: notificationId,
-          scheduledTime: scheduledDate,
-          title: alarm.label,
-          message: 'Time to wake up! (${_getDayName(dayOfWeek)})',
-          customTone: 'sounds/${alarm.tone.soundPath}.mp3',
-          customVolume: alarm.volume,
-          customVibration: true,
-        );
-        
-        if (reliableSuccess) {
-          print('✅ Reliable alarm backup scheduled successfully for ${_getDayName(dayOfWeek)}');
-          print('   Tone: ${alarm.tone.soundPath}');
-          print('   Volume: ${alarm.volume}');
-        } else {
-          print('⚠️ Failed to schedule reliable alarm backup (${_getDayName(dayOfWeek)})');
-        }
-      } catch (e) {
-        print('❌ Error scheduling reliable alarm backup for ${_getDayName(dayOfWeek)}: $e');
-        print('⚠️ Continuing with notification-only approach');
-        // Don't rethrow - we want the notification to still work
-      }
+      print('✅ Scheduled recurring alarm for ${_getDayName(dayOfWeek)}: $scheduledTZ');
     }
   }
   
@@ -421,6 +393,10 @@ class BasicAlarmService {
               'notificationId': triggerId,
             };
           }
+          
+          // 🗑️ AUTO-CONSUME: 알람이 트리거되면 자동으로 소모
+          print('🗑️ Timer: Auto-consuming triggered alarm...');
+          await consumeTriggeredAlarm(alarm.id, alarmPayload);
           
           // Directly navigate to alarm screen via Timer (not notification)
           if (navigatorKey.currentState != null) {
@@ -625,6 +601,37 @@ class BasicAlarmService {
     return pending.length;
   }
   
+  /// 🗑️ AUTO-CONSUME: 알람 트리거 시 자동 소모
+  /// 사이클 기반 관리를 위해 알람이 울릴 때 자동으로 삭제하고 카운트 감소
+  Future<void> consumeTriggeredAlarm(String alarmId, Map<String, dynamic> payload) async {
+    print('🗑️ AUTO-CONSUME: Processing triggered alarm $alarmId');
+    
+    try {
+      // 사이클 알람인지 확인 (ID에 'cycle_'이 포함되어 있으면 SHIFT 알람)
+      final isShiftAlarm = alarmId.contains('cycle_');
+      
+      if (isShiftAlarm) {
+        print('   🔄 SHIFT alarm detected - triggering cycle consumption');
+        await _cycleManager.consumeAlarm(alarmId, isShiftAlarm: true);
+      } else {
+        print('   ⚡ Basic alarm detected - triggering basic consumption');
+        await _cycleManager.consumeAlarm(alarmId, isShiftAlarm: false);
+      }
+      
+      // 알람 정보 출력
+      final title = payload['title'] ?? 'Unknown Alarm';
+      final scheduledTime = payload['scheduledTime'];
+      if (scheduledTime != null) {
+        final alarmTime = DateTime.fromMillisecondsSinceEpoch(scheduledTime);
+        print('   ✅ Consumed: $title at ${alarmTime.toString()}');
+      }
+      
+    } catch (e) {
+      print('❌ Error in auto-consume: $e');
+      // 에러가 발생해도 알람 화면은 계속 표시되어야 함
+    }
+  }
+  
   /// Debug method - check pending basic alarms
   Future<void> debugPendingBasicAlarms() async {
     final pending = await _notifications.pendingNotificationRequests();
@@ -666,17 +673,106 @@ class BasicAlarmService {
       print('---');
     }
     
-    // Report duplicates
+    // Report duplicates with detailed information
     final duplicates = alarmGroups.entries.where((entry) => entry.value.length > 1);
     if (duplicates.isNotEmpty) {
       print('🚨 DUPLICATE ALARMS DETECTED:');
       for (final duplicate in duplicates) {
         print('   Alarm ID ${duplicate.key}: ${duplicate.value.length} notifications');
+        
+        // Show details of each duplicate
+        for (int i = 0; i < duplicate.value.length; i++) {
+          final req = duplicate.value[i];
+          try {
+            final payload = jsonDecode(req.payload!);
+            final scheduledTime = DateTime.fromMillisecondsSinceEpoch(payload['scheduledTime']);
+            print('     [$i] Notification ID: ${req.id}, Scheduled: $scheduledTime, Title: ${req.title}');
+          } catch (e) {
+            print('     [$i] Notification ID: ${req.id}, Title: ${req.title} (payload error: $e)');
+          }
+        }
       }
+      
+      print('📊 DUPLICATE SUMMARY:');
+      print('   Total unique alarms: ${alarmGroups.length}');
+      print('   Alarms with duplicates: ${duplicates.length}');
+      print('   Total duplicate notifications: ${duplicates.fold(0, (sum, entry) => sum + entry.value.length)}');
+      
+      // 🗑️ AUTO-CLEANUP: Remove duplicates automatically
+      await cleanupDuplicateAlarms();
     }
     
     if (basicAlarms.isEmpty) {
       print('WARNING: No basic alarms are scheduled!');
     }
+  }
+  
+  /// 🗑️ Cleanup duplicate alarms automatically
+  Future<void> cleanupDuplicateAlarms() async {
+    print('🧹 CLEANUP: Starting automatic duplicate alarm removal...');
+    
+    final pending = await _notifications.pendingNotificationRequests();
+    final basicAlarms = pending.where((req) {
+      if (req.payload == null) return false;
+      try {
+        final payload = jsonDecode(req.payload!);
+        return payload['type'] == 'basic_alarm';
+      } catch (e) {
+        return false;
+      }
+    }).toList();
+    
+    // Group by alarm ID to find duplicates
+    final Map<String, List<PendingNotificationRequest>> alarmGroups = {};
+    
+    for (final alarm in basicAlarms) {
+      try {
+        final payload = jsonDecode(alarm.payload!);
+        final alarmId = payload['alarmId'];
+        if (alarmGroups.containsKey(alarmId)) {
+          alarmGroups[alarmId]!.add(alarm);
+        } else {
+          alarmGroups[alarmId] = [alarm];
+        }
+      } catch (e) {
+        // Skip malformed alarms
+        print('⚠️ Skipping malformed alarm ${alarm.id}: $e');
+      }
+    }
+    
+    int removedCount = 0;
+    
+    // For each group with duplicates, keep only the latest one
+    for (final entry in alarmGroups.entries) {
+      if (entry.value.length > 1) {
+        final duplicates = entry.value;
+        print('   🔍 Found ${duplicates.length} duplicates for alarm ${entry.key}');
+        
+        // Sort by scheduled time to keep the latest
+        duplicates.sort((a, b) {
+          try {
+            final payloadA = jsonDecode(a.payload!);
+            final payloadB = jsonDecode(b.payload!);
+            final timeA = payloadA['scheduledTime'] as int;
+            final timeB = payloadB['scheduledTime'] as int;
+            return timeA.compareTo(timeB);
+          } catch (e) {
+            return 0;
+          }
+        });
+        
+        // Cancel all but the last (latest) one
+        for (int i = 0; i < duplicates.length - 1; i++) {
+          final duplicate = duplicates[i];
+          print('     🗑️ Removing duplicate notification ${duplicate.id}');
+          await _notifications.cancel(duplicate.id);
+          removedCount++;
+        }
+        
+        print('     ✅ Kept latest notification ${duplicates.last.id} for alarm ${entry.key}');
+      }
+    }
+    
+    print('✅ CLEANUP COMPLETE: Removed $removedCount duplicate notifications');
   }
 }

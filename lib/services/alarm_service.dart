@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'package:alarm/alarm.dart';
+import 'package:alarm/alarm.dart' as alarm_pkg;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 
 /// Main alarm service using the alarm package with foreground service
 /// This is the primary alarm system for the app
 class AlarmService {
-  static StreamSubscription<AlarmSettings>? _alarmStreamSubscription;
+  static StreamSubscription<alarm_pkg.AlarmSettings>? _alarmStreamSubscription;
   
   /// Initialize the alarm service
   static Future<void> initialize() async {
@@ -14,7 +14,7 @@ class AlarmService {
       // Clear any corrupted alarm data first
       await _clearCorruptedAlarmData();
       
-      await Alarm.init();
+      await alarm_pkg.Alarm.init();
       
       // Listen for alarm triggers and automatically show alarm screen
       _startAlarmListener();
@@ -58,7 +58,7 @@ class AlarmService {
     
     _alarmStreamSubscription?.cancel(); // Cancel any existing subscription
     
-    _alarmStreamSubscription = Alarm.ringStream.stream.listen(
+    _alarmStreamSubscription = alarm_pkg.Alarm.ringStream.stream.listen(
       (alarmSettings) {
         print('🚨 ALARM RINGING! ID: ${alarmSettings.id}');
         print('📋 Alarm details: ${alarmSettings.notificationSettings.title}');
@@ -75,7 +75,7 @@ class AlarmService {
   }
   
   /// Show alarm screen when alarm triggers from stream
-  static Future<void> _showAlarmScreenFromStream(AlarmSettings alarmSettings) async {
+  static Future<void> _showAlarmScreenFromStream(alarm_pkg.AlarmSettings alarmSettings) async {
     print('🎯 Auto-triggering alarm screen for ID: ${alarmSettings.id}');
     
     try {
@@ -87,7 +87,7 @@ class AlarmService {
         'message': alarmSettings.notificationSettings.body,
         'notificationId': alarmSettings.id,
         'alarmTone': alarmSettings.assetAudioPath,
-        'alarmVolume': alarmSettings.volumeSettings.volume ?? 0.8,
+        'alarmVolume': 0.8,
       };
       
       // Try to navigate to alarm screen
@@ -130,17 +130,18 @@ class AlarmService {
       }
       
       // Create alarm settings with explicit validation
-      final alarmSettings = AlarmSettings(
+      final alarmSettings = alarm_pkg.AlarmSettings(
         id: id,
         dateTime: scheduledTime,
         assetAudioPath: soundPath ?? 'assets/sounds/wakeupcall.mp3',
         loopAudio: true,  // Keep playing until dismissed
         vibrate: vibrate,
-        volumeSettings: VolumeSettings.fade(
-          volume: volume.clamp(0.0, 1.0), // Ensure volume is valid
-          fadeDuration: const Duration(seconds: 3),
+        volumeSettings: alarm_pkg.VolumeSettings.fade(
+          volume: volume.clamp(0.0, 1.0),
+          fadeDuration: const Duration(seconds: 2),
+          volumeEnforced: true,
         ),
-        notificationSettings: NotificationSettings(
+        notificationSettings: alarm_pkg.NotificationSettings(
           title: title.trim(),
           body: message.trim(),
         ),
@@ -150,7 +151,7 @@ class AlarmService {
       );
       
       // Schedule the alarm
-      final success = await Alarm.set(alarmSettings: alarmSettings);
+      final success = await alarm_pkg.Alarm.set(alarmSettings: alarmSettings);
       
       if (success) {
         print('✅ Reliable alarm scheduled successfully:');
@@ -175,7 +176,7 @@ class AlarmService {
   /// Cancel a specific alarm
   static Future<bool> cancelAlarm(int id) async {
     try {
-      final success = await Alarm.stop(id);
+      final success = await alarm_pkg.Alarm.stop(id);
       if (success) {
         print('✅ Alarm cancelled: $id');
       } else {
@@ -189,13 +190,13 @@ class AlarmService {
   }
   
   /// Get all currently scheduled alarms
-  static Future<List<AlarmSettings>> getAllAlarms() async {
-    return await Alarm.getAlarms();
+  static Future<List<alarm_pkg.AlarmSettings>> getAllAlarms() async {
+    return await alarm_pkg.Alarm.getAlarms();
   }
   
   /// Check if a specific alarm is scheduled
   static Future<bool> isAlarmSet(int id) async {
-    final isRinging = await Alarm.isRinging(id);
+    final isRinging = await alarm_pkg.Alarm.isRinging(id);
     final alarms = await getAllAlarms();
     final isScheduled = alarms.any((alarm) => alarm.id == id);
     return isRinging || isScheduled;
@@ -205,9 +206,9 @@ class AlarmService {
   static Future<void> stopAllAlarms() async {
     final alarms = await getAllAlarms();
     for (final alarm in alarms) {
-      final isRinging = await Alarm.isRinging(alarm.id);
+      final isRinging = await alarm_pkg.Alarm.isRinging(alarm.id);
       if (isRinging) {
-        await Alarm.stop(alarm.id);
+        await alarm_pkg.Alarm.stop(alarm.id);
       }
     }
     print('✅ All ringing alarms stopped');
