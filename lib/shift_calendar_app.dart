@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'l10n/app_localizations.dart';
 import 'models/shift_pattern.dart';
@@ -12,7 +11,6 @@ import 'services/shift_scheduling_service.dart';
 import 'services/shift_notification_service.dart';
 import 'services/shift_storage_service.dart';
 import 'services/basic_alarm_service.dart';
-import 'services/shift_alarm_manager.dart';
 import 'services/language_service.dart';
 import 'services/alarm_diagnostic_service.dart';
 import 'services/alarm_trigger_validator.dart';

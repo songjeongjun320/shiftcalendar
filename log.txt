@@ -1,89 +1,165 @@
-error: The getter 'volume' isn't defined for the type 'AlarmSettings'. (undefined_getter at [shiftcalendar] lib\services\alarm_service.dart:90)
-error: The named parameter 'volumeSettings' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\alarm_service.dart:133)
-error: The named parameter 'volume' isn't defined. (undefined_named_parameter at [shiftcalendar] lib\services\alarm_service.dart:139)
-error: The named parameter 'createdAt' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\cycle_alarm_example.dart:57)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\cycle_alarm_example.dart:61)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\cycle_alarm_example.dart:62)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\cycle_alarm_example.dart:63)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\cycle_alarm_example.dart:64)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\cycle_alarm_example.dart:65)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\cycle_alarm_example.dart:66)
-error: The named parameter 'alarmType' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\cycle_alarm_example.dart:73)
-error: The named parameter 'message' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\cycle_alarm_example.dart:73)
-error: The named parameter 'createdAt' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\cycle_alarm_example.dart:73)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\cycle_alarm_example.dart:77)
-error: The argument type 'List<InvalidType>' can't be assigned to the parameter type 'Set<ShiftType>'.  (argument_type_not_assignable at [shiftcalendar] lib\services\cycle_alarm_example.dart:77)
-error: The named parameter 'alarmType' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\cycle_alarm_example.dart:89)
-error: The named parameter 'message' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\cycle_alarm_example.dart:89)
-error: The named parameter 'createdAt' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\cycle_alarm_example.dart:89)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\cycle_alarm_example.dart:93)
-error: The argument type 'List<InvalidType>' can't be assigned to the parameter type 'Set<ShiftType>'.  (argument_type_not_assignable at [shiftcalendar] lib\services\cycle_alarm_example.dart:93)
-error: The method 'BasicAlarm' isn't defined for the type 'CycleAlarmExample'. (undefined_method at [shiftcalendar] lib\services\cycle_alarm_example.dart:121)
-error: The method 'BasicAlarm' isn't defined for the type 'CycleAlarmExample'. (undefined_method at [shiftcalendar] lib\services\cycle_alarm_example.dart:133)
-error: The named parameter 'createdAt' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:49)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:53)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:54)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:55)
-error: Too many positional arguments: 0 expected, but 1 found. (extra_positional_arguments_could_be_named at [shiftcalendar] lib\services\pattern_test_examples.dart:65)
-error: The named parameter 'minute' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:65)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:66)
-error: The named parameter 'createdAt' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:79)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:83)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:84)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:85)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:86)
-error: Too many positional arguments: 0 expected, but 1 found. (extra_positional_arguments_could_be_named at [shiftcalendar] lib\services\pattern_test_examples.dart:96)
-error: The named parameter 'minute' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:96)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:97)
-error: The named parameter 'createdAt' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:110)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:114)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:115)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:116)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:117)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:118)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:119)
-error: Too many positional arguments: 0 expected, but 1 found. (extra_positional_arguments_could_be_named at [shiftcalendar] lib\services\pattern_test_examples.dart:129)
-error: The named parameter 'minute' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:129)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:130)
-error: The named parameter 'createdAt' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:143)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:147)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:148)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:149)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:150)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:151)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:152)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:153)
-error: Too many positional arguments: 0 expected, but 1 found. (extra_positional_arguments_could_be_named at [shiftcalendar] lib\services\pattern_test_examples.dart:163)
-error: The named parameter 'minute' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:163)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:164)
-error: Too many positional arguments: 0 expected, but 1 found. (extra_positional_arguments_could_be_named at [shiftcalendar] lib\services\pattern_test_examples.dart:171)
-error: The named parameter 'minute' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:171)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:172)
-error: The named parameter 'createdAt' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:188)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:192)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:193)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:194)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:195)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:196)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:197)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:198)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:199)
-error: There's no constant named 'dayShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:200)
-error: There's no constant named 'nightShift' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:201)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:202)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:203)
-error: Too many positional arguments: 0 expected, but 1 found. (extra_positional_arguments_could_be_named at [shiftcalendar] lib\services\pattern_test_examples.dart:213)
-error: The named parameter 'minute' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:213)
-error: There's no constant named 'dayOff' in 'ShiftType'. (undefined_enum_constant at [shiftcalendar] lib\services\pattern_test_examples.dart:214)
-error: The named parameter 'alarmType' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:231)
-error: The named parameter 'message' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:231)
-error: The named parameter 'createdAt' is required, but there's no corresponding argument. (missing_required_argument at [shiftcalendar] lib\services\pattern_test_examples.dart:231)
-error: The argument type 'List<ShiftType>' can't be assigned to the parameter type 'Set<ShiftType>'.  (argument_type_not_assignable at [shiftcalendar] lib\services\pattern_test_examples.dart:235)
-error: The method 'padRight' isn't defined for the type 'Object'. (undefined_method at [shiftcalendar] lib\services\pattern_test_examples.dart:269)
-warning: The value of the local variable 'unified' isn't used. (unused_local_variable at [shiftcalendar] lib\services\alarm_system_fix.dart:77)
-warning: Unused import: '../main.dart'. (unused_import at [shiftcalendar] lib\services\alarm_system_validator.dart:5)
-warning: Unused import: 'dart:convert'. (unused_import at [shiftcalendar] lib\services\cycle_alarm_manager.dart:1)
-warning: Unused import: 'package:flutter/material.dart'. (unused_import at [shiftcalendar] lib\services\cycle_alarm_manager.dart:3)
-warning: The value of the field '_shiftAlarmManager' isn't used. (unused_field at [shiftcalendar] lib\services\unified_alarm_service.dart:25)
-warning: Unused import: 'package:intl/intl.dart'. (unused_import at [shiftcalendar] lib\shift_calendar_app.dart:3)
-warning: Unused import: 'services/shift_alarm_manager.dart'. (unused_import at [shiftcalendar] lib\shift_calendar_app.dart:15)
+/WindowOnBackDispatcher(10842): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@3bb46e5
+I/flutter (10842): 🕐 DIAGNOSTIC CHECK: 07:37 (07:37)
+I/flutter (10842): 📋 Total pending notifications: 4
+I/flutter (10842): ⏰ Alarm notifications: 4
+I/flutter (10842): 🔍 Validator check at 07:37:57
+I/flutter (10842): ✅ No missed, current, or upcoming alarms detected
+W/WindowOnBackDispatcher(10842): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@3bb46e5
+I/flutter (10842): 🔄 Updating single ShiftAlarm: Day Off Alarm
+I/flutter (10842): 🗑️ Cancelled existing notifications for alarm: Day Off Alarm
+I/flutter (10842): 🚀 NEW SHIFT ALARM SYSTEM: Converting to BasicAlarms...
+I/flutter (10842):    Pattern: Day-Day-Night-Night-Off-Off
+I/flutter (10842):    Total alarms: 1
+I/flutter (10842):    Active alarms: 1
+I/flutter (10842):    Inactive alarms: 0
+I/flutter (10842): 🧹 FORCE CLEANUP: Removing ALL existing basic alarms to prevent duplicates...
+I/flutter (10842): 🚨 FORCE CLEANUP: Removing ALL basic alarms...
+I/flutter (10842): 🗑️ Cancelling all basic alarms...
+I/flutter (10842):    ✅ Cancelled 0 active timers
+I/flutter (10842): 🌉 AlarmServiceBridge: Cancelling alarm via AlarmService - ID: 833165071
+D/AlarmApiImpl(10842): Warning notification is already turned off.
+I/flutter (10842): ✅ Alarm cancelled: 833165071
+I/flutter (10842): ✅ AlarmServiceBridge: Successfully cancelled via AlarmService
+D/AlarmApiImpl(10842): Alarm stopped notification for 833165071 was processed successfully by Flutter.
+I/flutter (10842): 🌉 AlarmServiceBridge: Cancelling alarm via AlarmService - ID: 828056317
+D/AlarmApiImpl(10842): Warning notification is already turned off.
+I/flutter (10842): ✅ Alarm cancelled: 828056317
+I/flutter (10842): ✅ AlarmServiceBridge: Successfully cancelled via AlarmService
+D/AlarmApiImpl(10842): Alarm stopped notification for 828056317 was processed successfully by Flutter.
+I/flutter (10842): 🌉 AlarmServiceBridge: Cancelling alarm via AlarmService - ID: 170666973
+D/AlarmApiImpl(10842): Warning notification is already turned off.
+I/flutter (10842): ✅ Alarm cancelled: 170666973
+I/flutter (10842): ✅ AlarmServiceBridge: Successfully cancelled via AlarmService
+D/AlarmApiImpl(10842): Alarm stopped notification for 170666973 was processed successfully by Flutter.
+I/flutter (10842): 🌉 AlarmServiceBridge: Cancelling alarm via AlarmService - ID: 500021714
+D/AlarmApiImpl(10842): Warning notification is already turned off.
+I/flutter (10842): ✅ Alarm cancelled: 500021714
+I/flutter (10842): ✅ AlarmServiceBridge: Successfully cancelled via AlarmService
+I/flutter (10842): ✅ Cancelled 4 basic alarm notifications
+I/flutter (10842):    ✅ Cancelled all stored BasicAlarms
+D/AlarmApiImpl(10842): Alarm stopped notification for 500021714 was processed successfully by Flutter.
+I/flutter (10842):    📊 Current pending notifications: 0
+I/flutter (10842):    📊 Final pending notifications: 0
+I/flutter (10842):    🧹 Force cancelled 0 pending notifications
+I/flutter (10842):    📉 Reduced from 0 to 0 notifications
+I/flutter (10842): ✅ FORCE CLEANUP completed successfully
+I/flutter (10842): 🗑️ Cancelling existing BasicAlarms for: Day Off Alarm (active: true)
+I/flutter (10842): 🗑️ Cancelling BasicAlarms for ShiftAlarm: 4208793c-fbb1-4692-8e79-d6aaa94af15d
+I/flutter (10842):    Found 0 stored BasicAlarms to cancel
+I/flutter (10842):    🧹 Force cancelling notifications containing: 4208793c-fbb1-4692-8e79-d6aaa94af15d
+I/flutter (10842): ✅ Cancelled 0 total alarms for ShiftAlarm: 4208793c-fbb1-4692-8e79-d6aaa94af15d
+I/flutter (10842): 📋 Processing ACTIVE ShiftAlarm: Day Off Alarm
+I/flutter (10842): 🔄 Converting ShiftAlarm to BasicAlarms...
+I/flutter (10842):    ShiftAlarm: Day Off Alarm
+I/flutter (10842):    Target shifts: Off
+I/flutter (10842):    Time: 07:40
+I/flutter (10842): 🗑️ Cancelling BasicAlarms for ShiftAlarm: 4208793c-fbb1-4692-8e79-d6aaa94af15d
+I/flutter (10842):    Found 0 stored BasicAlarms to cancel
+I/flutter (10842):    🧹 Force cancelling notifications containing: 4208793c-fbb1-4692-8e79-d6aaa94af15d
+I/flutter (10842): ✅ Cancelled 0 total alarms for ShiftAlarm: 4208793c-fbb1-4692-8e79-d6aaa94af15d
+I/flutter (10842):    🗑️ Cancelled existing alarms for Day Off Alarm
+I/flutter (10842):    Found 5 upcoming shift dates for target types: Off
+I/flutter (10842):    ✅ Match found! 2025-08-17 - shift: Off
+I/flutter (10842):    📅 Creating BasicAlarm for 2025-08-17 (Off)
+I/flutter (10842): === BASIC ALARM SERVICE: scheduleBasicAlarm called ===
+I/flutter (10842): Alarm ID: 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-17_0740
+I/flutter (10842): Label: Day Off Alarm (Off)
+I/flutter (10842): Time: TimeOfDay(07:40)
+I/flutter (10842): Active: true
+I/flutter (10842): One-time: true
+I/flutter (10842): 🗑️ Cancelling basic alarm: 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-17_0740
+I/flutter (10842): ✅ Cancelled 0 notifications for alarm 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-17_0740
+I/flutter (10842): Cancelled existing notifications for alarm 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-17_0740
+I/flutter (10842): Scheduling one-time alarm...
+I/flutter (10842): 🎯 Using specific scheduled date: 2025-08-17 at 07:40
+I/flutter (10842): Scheduling one-time alarm for: 2025-08-17 07:40:00.000-0700 (Day Off Alarm (Off))
+I/flutter (10842): 🎯 Scheduling alarm screen trigger for: 2025-08-17 07:40:00.000-0700
+I/flutter (10842): ✅ Alarm screen trigger scheduled with ID: 609262121
+I/flutter (10842): ✅ Timer-based alarm screen trigger set for 1 minutes from now
+I/flutter (10842): ✅ Scheduled one-time alarm: Day Off Alarm (Off) for 2025-08-17 07:40:00.000-0700
+I/flutter (10842): === BASIC ALARM SCHEDULING COMPLETED ===
+I/flutter (10842):    ✅ Match found! 2025-08-22 - shift: Off
+I/flutter (10842):    📅 Creating BasicAlarm for 2025-08-22 (Off)
+I/flutter (10842): === BASIC ALARM SERVICE: scheduleBasicAlarm called ===
+I/flutter (10842): Alarm ID: 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-22_0740
+I/flutter (10842): Label: Day Off Alarm (Off)
+I/flutter (10842): Time: TimeOfDay(07:40)
+I/flutter (10842): Active: true
+I/flutter (10842): One-time: true
+I/flutter (10842): 🗑️ Cancelling basic alarm: 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-22_0740
+I/flutter (10842): ✅ Cancelled 0 notifications for alarm 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-22_0740
+I/flutter (10842): Cancelled existing notifications for alarm 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-22_0740
+I/flutter (10842): Scheduling one-time alarm...
+I/flutter (10842): 🎯 Using specific scheduled date: 2025-08-22 at 07:40
+I/flutter (10842): Scheduling one-time alarm for: 2025-08-22 07:40:00.000-0700 (Day Off Alarm (Off))
+I/flutter (10842): 🎯 Scheduling alarm screen trigger for: 2025-08-22 07:40:00.000-0700
+I/flutter (10842): ✅ Alarm screen trigger scheduled with ID: 769460016
+I/flutter (10842): ✅ Timer-based alarm screen trigger set for 7201 minutes from now
+I/flutter (10842): ✅ Scheduled one-time alarm: Day Off Alarm (Off) for 2025-08-22 07:40:00.000-0700
+I/flutter (10842): === BASIC ALARM SCHEDULING COMPLETED ===
+I/flutter (10842):    ✅ Match found! 2025-08-23 - shift: Off
+I/flutter (10842):    📅 Creating BasicAlarm for 2025-08-23 (Off)
+I/flutter (10842): === BASIC ALARM SERVICE: scheduleBasicAlarm called ===
+I/flutter (10842): Alarm ID: 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-23_0740
+I/flutter (10842): Label: Day Off Alarm (Off)
+I/flutter (10842): Time: TimeOfDay(07:40)
+I/flutter (10842): Active: true
+I/flutter (10842): One-time: true
+I/flutter (10842): 🗑️ Cancelling basic alarm: 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-23_0740
+I/flutter (10842): ✅ Cancelled 0 notifications for alarm 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-23_0740
+I/flutter (10842): Cancelled existing notifications for alarm 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-23_0740
+I/flutter (10842): Scheduling one-time alarm...
+I/flutter (10842): 🎯 Using specific scheduled date: 2025-08-23 at 07:40
+I/flutter (10842): Scheduling one-time alarm for: 2025-08-23 07:40:00.000-0700 (Day Off Alarm (Off))
+I/flutter (10842): 🎯 Scheduling alarm screen trigger for: 2025-08-23 07:40:00.000-0700
+I/flutter (10842): ✅ Alarm screen trigger scheduled with ID: 896192167
+I/flutter (10842): ✅ Timer-based alarm screen trigger set for 8641 minutes from now
+I/flutter (10842): ✅ Scheduled one-time alarm: Day Off Alarm (Off) for 2025-08-23 07:40:00.000-0700
+I/flutter (10842): === BASIC ALARM SCHEDULING COMPLETED ===
+I/flutter (10842):    ✅ Match found! 2025-08-28 - shift: Off
+I/flutter (10842):    📅 Creating BasicAlarm for 2025-08-28 (Off)
+I/flutter (10842): === BASIC ALARM SERVICE: scheduleBasicAlarm called ===
+I/flutter (10842): Alarm ID: 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-28_0740
+I/flutter (10842): Label: Day Off Alarm (Off)
+I/flutter (10842): Time: TimeOfDay(07:40)
+I/flutter (10842): Active: true
+I/flutter (10842): One-time: true
+I/flutter (10842): 🗑️ Cancelling basic alarm: 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-28_0740
+I/flutter (10842): ✅ Cancelled 0 notifications for alarm 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-28_0740
+I/flutter (10842): Cancelled existing notifications for alarm 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-28_0740
+I/flutter (10842): Scheduling one-time alarm...
+I/flutter (10842): 🎯 Using specific scheduled date: 2025-08-28 at 07:40
+I/flutter (10842): Scheduling one-time alarm for: 2025-08-28 07:40:00.000-0700 (Day Off Alarm (Off))
+I/flutter (10842): 🎯 Scheduling alarm screen trigger for: 2025-08-28 07:40:00.000-0700
+I/flutter (10842): ✅ Alarm screen trigger scheduled with ID: 195305208
+I/flutter (10842): ✅ Timer-based alarm screen trigger set for 15841 minutes from now
+I/flutter (10842): ✅ Scheduled one-time alarm: Day Off Alarm (Off) for 2025-08-28 07:40:00.000-0700
+I/flutter (10842): === BASIC ALARM SCHEDULING COMPLETED ===
+I/flutter (10842):    ✅ Match found! 2025-08-29 - shift: Off
+I/flutter (10842):    📅 Creating BasicAlarm for 2025-08-29 (Off)
+I/flutter (10842): === BASIC ALARM SERVICE: scheduleBasicAlarm called ===
+I/flutter (10842): Alarm ID: 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-29_0740
+I/flutter (10842): Label: Day Off Alarm (Off)
+I/flutter (10842): Time: TimeOfDay(07:40)
+I/flutter (10842): Active: true
+I/flutter (10842): One-time: true
+I/flutter (10842): 🗑️ Cancelling basic alarm: 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-29_0740
+I/flutter (10842): ✅ Cancelled 0 notifications for alarm 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-29_0740
+I/flutter (10842): Cancelled existing notifications for alarm 4208793c-fbb1-4692-8e79-d6aaa94af15d_basic_2025-08-29_0740
+I/flutter (10842): Scheduling one-time alarm...
+I/flutter (10842): 🎯 Using specific scheduled date: 2025-08-29 at 07:40
+I/flutter (10842): Scheduling one-time alarm for: 2025-08-29 07:40:00.000-0700 (Day Off Alarm (Off))
+I/flutter (10842): 🎯 Scheduling alarm screen trigger for: 2025-08-29 07:40:00.000-0700
+I/flutter (10842): ✅ Alarm screen trigger scheduled with ID: 868995596
+I/flutter (10842): ✅ Timer-based alarm screen trigger set for 17281 minutes from now
+I/flutter (10842): ✅ Scheduled one-time alarm: Day Off Alarm (Off) for 2025-08-29 07:40:00.000-0700
+I/flutter (10842): === BASIC ALARM SCHEDULING COMPLETED ===
+I/flutter (10842): ✅ Created 5 BasicAlarms for ShiftAlarm: Day Off Alarm
+I/flutter (10842): ✅ Created 5 BasicAlarms for Day Off Alarm
+I/flutter (10842): 🎉 NEW SHIFT ALARM SYSTEM: All shift alarms processed successfully!
+I/flutter (10842):    Active alarms scheduled, inactive alarms cancelled
+I/flutter (10842): ✅ Successfully updated single ShiftAlarm: Day Off Alarm
+I/flutter (10842): 🔍 Validator check at 07:38:27
+I/flutter (10842): ⏰ Upcoming: Day Off Alarm (Off) in 1m
+I/flutter (10842): ⏰ Upcoming: ALARM TRIGGER in 1m
+I/flutter (10842): 📊 Summary: 0 missed, 0 current, 2 upcoming

@@ -5,7 +5,6 @@ import '../models/basic_alarm.dart';
 import 'basic_alarm_service.dart';
 import 'cycle_alarm_manager.dart';
 import 'auto_refill_service.dart';
-import 'shift_alarm_manager.dart';
 
 /// 🎯 Unified Alarm Service
 /// 통합 알람 서비스 - SHIFT 알람과 기본 알람의 독립적 관리
@@ -22,7 +21,6 @@ class UnifiedAlarmService {
   late final BasicAlarmService _basicAlarmService;
   late final CycleAlarmManager _cycleManager;
   late final AutoRefillService _autoRefillService;
-  late final ShiftAlarmManager _shiftAlarmManager;
   
   // 📊 분리된 상태 관리
   bool _isInitialized = false;
@@ -45,8 +43,6 @@ class UnifiedAlarmService {
     // 자동 리필 서비스 초기화
     _autoRefillService = AutoRefillService(_basicAlarmService);
     
-    // 시프트 알람 매니저 초기화 (기존 호환성)
-    _shiftAlarmManager = ShiftAlarmManager(_basicAlarmService, "unified_pattern");
     
     // 🔗 자동 리필 콜백 연결
     _cycleManager.setAutoRefillCallback(() async {

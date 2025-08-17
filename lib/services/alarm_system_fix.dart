@@ -74,7 +74,6 @@ class AlarmSystemFix {
   static Future<AlarmSystemStatus> checkSystemStatus(FlutterLocalNotificationsPlugin notifications) async {
     try {
       final pending = await notifications.pendingNotificationRequests();
-      // final unified = UnifiedAlarmService(notifications); // TODO: Use this service
       
       // 중복 검사
       final alarmIds = <String>[];
