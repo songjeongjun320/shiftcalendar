@@ -3,8 +3,6 @@
   "welcomeTitle": "교대 달력에 오신 것을 환영합니다",
   "welcomeDescription": "고정된 요일이 아닌 근무 사이클에 따라 자동으로 알람을 예약하는 교대 패턴을 만들어보세요.",
   "createPattern": "패턴 만들기",
-  "useSamplePattern": "샘플 패턴 사용",
-  "samplePatternDescription": "직접 패턴을 만들거나 샘플 주-주-야-야-휴-휴 패턴을 사용하세요.",
   
   "currentPattern": "현재 패턴",
   "todayShift": "오늘의 근무",

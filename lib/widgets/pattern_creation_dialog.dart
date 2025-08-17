@@ -20,6 +20,11 @@ class _PatternCreationDialogState extends State<PatternCreationDialog> {
   final List<ShiftType> _currentCycle = [];
   DateTime _selectedStartDate = DateTime.now().add(Duration(days: 1)); // Default to tomorrow
   
+  // UI state management
+  int _currentStep = 0; // 0: Pattern Selection, 1: Start Date Selection
+  String _selectedPatternName = '';
+  List<ShiftType> _selectedCycle = [];
+  
   final List<Map<String, dynamic>> _presetPatterns = [
     {
       'name': 'Day-Day-Night-Night-Off-Off',
@@ -56,59 +61,137 @@ class _PatternCreationDialogState extends State<PatternCreationDialog> {
     final l10n = AppLocalizations.of(context)!;
     
     return AlertDialog(
-      title: Text(l10n.createShiftPattern),
+      title: Row(
+        children: [
+          if (_currentStep > 0)
+            IconButton(
+              onPressed: () => setState(() => _currentStep--),
+              icon: Icon(Icons.arrow_back),
+              padding: EdgeInsets.zero,
+            ),
+          Expanded(
+            child: Text(
+              _currentStep == 0 ? l10n.createShiftPattern : l10n.patternStartDate,
+            ),
+          ),
+        ],
+      ),
       content: SizedBox(
         width: double.maxFinite,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (!_showCustomBuilder) ...[
-              Text(
-                l10n.choosePresetPattern,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              SizedBox(height: 16),
-              ..._presetPatterns.map((preset) => Card(
-                child: ListTile(
-                  title: Text(preset['name']),
-                  subtitle: Wrap(
-                    spacing: 4,
-                    children: (preset['cycle'] as List<ShiftType>)
-                        .map((shift) => Chip(
-                              label: Text(shift.localizedShortCode(context)),
-                              backgroundColor: _getShiftColor(shift),
-                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ))
-                        .toList(),
-                  ),
-                  onTap: () => _selectPresetPattern(preset['name'], preset['cycle']),
-                ),
-              )),
-              SizedBox(height: 16),
-              TextButton.icon(
-                onPressed: () => setState(() => _showCustomBuilder = true),
-                icon: Icon(Icons.build),
-                label: Text(l10n.createCustomPattern),
-              ),
-            ] else ...[
-              _buildCustomPatternBuilder(),
-            ],
-          ],
-        ),
+        child: _currentStep == 0 ? _buildPatternSelection() : _buildStartDateSelection(),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.cancel),
-        ),
-        if (_showCustomBuilder)
-          FilledButton(
-            onPressed: _canCreateCustomPattern() ? _createCustomPattern : null,
-            child: Text(l10n.create),
+      actions: _buildActions(),
+    );
+  }
+  
+  Widget _buildPatternSelection() {
+    final l10n = AppLocalizations.of(context)!;
+    
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!_showCustomBuilder) ...[
+          Text(
+            l10n.choosePresetPattern,
+            style: Theme.of(context).textTheme.titleSmall,
           ),
+          SizedBox(height: 16),
+          ..._presetPatterns.map((preset) => Card(
+            child: ListTile(
+              title: Text(preset['name']),
+              subtitle: Wrap(
+                spacing: 4,
+                children: (preset['cycle'] as List<ShiftType>)
+                    .map((shift) => Chip(
+                          label: Text(shift.localizedShortCode(context)),
+                          backgroundColor: _getShiftColor(shift),
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ))
+                    .toList(),
+              ),
+              onTap: () => _selectPresetPattern(preset['name'], preset['cycle']),
+            ),
+          )),
+          SizedBox(height: 16),
+          TextButton.icon(
+            onPressed: () => setState(() => _showCustomBuilder = true),
+            icon: Icon(Icons.build),
+            label: Text(l10n.createCustomPattern),
+          ),
+        ] else ...[
+          _buildCustomPatternBuilder(),
+        ],
       ],
     );
+  }
+  
+  Widget _buildStartDateSelection() {
+    final l10n = AppLocalizations.of(context)!;
+    
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Show selected pattern summary
+        Card(
+          color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+          child: Padding(
+            padding: EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _selectedPatternName,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                SizedBox(height: 8),
+                Wrap(
+                  spacing: 4,
+                  children: _selectedCycle
+                      .map((shift) => Chip(
+                            label: Text(shift.localizedShortCode(context)),
+                            backgroundColor: _getShiftColor(shift),
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ))
+                      .toList(),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(height: 16),
+        
+        Text(
+          l10n.startDateHint,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        SizedBox(height: 16),
+        
+        _buildStartDateSelector(l10n),
+      ],
+    );
+  }
+  
+  List<Widget> _buildActions() {
+    final l10n = AppLocalizations.of(context)!;
+    
+    return [
+      TextButton(
+        onPressed: () => Navigator.of(context).pop(),
+        child: Text(l10n.cancel),
+      ),
+      if (_currentStep == 0 && _showCustomBuilder)
+        FilledButton(
+          onPressed: _canCreateCustomPattern() ? _proceedToStartDate : null,
+          child: Text('Next'),
+        )
+      else if (_currentStep == 1)
+        FilledButton(
+          onPressed: _createPattern,
+          child: Text(l10n.create),
+        ),
+    ];
   }
   
   Widget _buildCustomPatternBuilder() {
@@ -139,10 +222,6 @@ class _PatternCreationDialogState extends State<PatternCreationDialog> {
           ),
           onChanged: (value) => setState(() {}), // Trigger UI update
         ),
-        SizedBox(height: 16),
-        
-        // Start date selector
-        _buildStartDateSelector(l10n),
         SizedBox(height: 16),
         
         Text(
@@ -198,7 +277,26 @@ class _PatternCreationDialogState extends State<PatternCreationDialog> {
   }
   
   void _selectPresetPattern(String name, List<ShiftType> cycle) {
-    _showStartDateSelectionDialog(name, cycle);
+    setState(() {
+      _selectedPatternName = name;
+      _selectedCycle = List.from(cycle);
+      _currentStep = 1; // Move to start date selection
+    });
+  }
+  
+  void _proceedToStartDate() {
+    final name = _nameController.text.trim();
+    if (name.isNotEmpty && _currentCycle.isNotEmpty) {
+      setState(() {
+        _selectedPatternName = name;
+        _selectedCycle = List.from(_currentCycle);
+        _currentStep = 1; // Move to start date selection
+      });
+    }
+  }
+  
+  void _createPattern() {
+    widget.onPatternCreated(_selectedPatternName, _selectedCycle, _selectedStartDate);
     Navigator.of(context).pop();
   }
   
@@ -328,124 +426,6 @@ class _PatternCreationDialogState extends State<PatternCreationDialog> {
     }
   }
   
-  void _createCustomPattern() {
-    final name = _nameController.text.trim();
-    if (name.isNotEmpty && _currentCycle.isNotEmpty) {
-      widget.onPatternCreated(name, List.from(_currentCycle), _selectedStartDate);
-      Navigator.of(context).pop();
-    }
-  }
-  
-  void _showStartDateSelectionDialog(String name, List<ShiftType> cycle) {
-    final l10n = AppLocalizations.of(context)!;
-    DateTime selectedDate = DateTime.now().add(Duration(days: 1)); // Default to tomorrow
-    
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(l10n.patternStartsOn),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                l10n.startDateHint,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              SizedBox(height: 16),
-              
-              // Date display
-              InkWell(
-                onTap: () async {
-                  final DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: selectedDate,
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(Duration(days: 365)),
-                    helpText: l10n.selectStartDate,
-                  );
-                  
-                  if (picked != null) {
-                    setDialogState(() {
-                      selectedDate = picked;
-                    });
-                  }
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).dividerColor),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.calendar_today, size: 20),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              DateFormat.yMMMd().format(selectedDate),
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            Text(
-                              DateFormat.EEEE().format(selectedDate),
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(Icons.arrow_drop_down),
-                    ],
-                  ),
-                ),
-              ),
-              
-              SizedBox(height: 16),
-              
-              // Quick selection buttons
-              Wrap(
-                spacing: 8,
-                children: [
-                  ActionChip(
-                    label: Text(l10n.tomorrow),
-                    onPressed: () {
-                      setDialogState(() {
-                        selectedDate = DateTime.now().add(Duration(days: 1));
-                      });
-                    },
-                  ),
-                  ActionChip(
-                    label: Text(l10n.nextMonday),
-                    onPressed: () {
-                      setDialogState(() {
-                        selectedDate = _getNextMonday();
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () {
-                widget.onPatternCreated(name, cycle, selectedDate);
-                Navigator.of(context).pop(); // Close date selection dialog
-                Navigator.of(context).pop(); // Close pattern creation dialog
-              },
-              child: Text(l10n.create),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
   
   Color _getShiftColor(ShiftType shiftType) {
     switch (shiftType) {

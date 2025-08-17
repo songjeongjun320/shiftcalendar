@@ -1,11 +1,12 @@
 import '../models/shift_alarm.dart';
-import 'reliable_alarm_service.dart';
+import 'alarm_service.dart';
+import '../models/alarm_enums.dart';
 
-/// Bridge service to integrate all alarm types with ReliableAlarmService
+/// Bridge service to integrate all alarm types with AlarmService
 /// Provides common mapping functions and utilities for alarm services
 class AlarmServiceBridge {
   
-  /// Schedule alarm using ReliableAlarmService with AlarmSettings
+  /// Schedule alarm using AlarmService with AlarmSettings
   static Future<bool> scheduleWithReliableService({
     required int id,
     required DateTime scheduledTime,
@@ -14,14 +15,14 @@ class AlarmServiceBridge {
     required AlarmSettings settings,
   }) async {
     try {
-      print('🌉 AlarmServiceBridge: Scheduling alarm via ReliableAlarmService');
+      print('🌉 AlarmServiceBridge: Scheduling alarm via AlarmService');
       print('   ID: $id');
       print('   Time: $scheduledTime');
       print('   Title: $title');
       print('   Tone: ${settings.tone.soundPath}');
       print('   Volume: ${settings.volume}');
       
-      final success = await ReliableAlarmService.scheduleAlarm(
+      final success = await AlarmService.scheduleAlarm(
         id: id,
         scheduledTime: scheduledTime,
         title: title,
@@ -32,9 +33,9 @@ class AlarmServiceBridge {
       );
       
       if (success) {
-        print('✅ AlarmServiceBridge: Successfully scheduled via ReliableAlarmService');
+        print('✅ AlarmServiceBridge: Successfully scheduled via AlarmService');
       } else {
-        print('❌ AlarmServiceBridge: Failed to schedule via ReliableAlarmService');
+        print('❌ AlarmServiceBridge: Failed to schedule via AlarmService');
       }
       
       return success;
@@ -55,7 +56,7 @@ class AlarmServiceBridge {
     bool? customVibration,
   }) async {
     try {
-      print('🌉 AlarmServiceBridge: Scheduling basic alarm via ReliableAlarmService');
+      print('🌉 AlarmServiceBridge: Scheduling basic alarm via AlarmService');
       print('   ID: $id');
       print('   Time: $scheduledTime');
       print('   Title: $title');
@@ -68,7 +69,7 @@ class AlarmServiceBridge {
       print('   Sound: $soundPath');
       print('   Volume: $volume');
       
-      final success = await ReliableAlarmService.scheduleAlarm(
+      final success = await AlarmService.scheduleAlarm(
         id: id,
         scheduledTime: scheduledTime,
         title: title,
@@ -79,9 +80,9 @@ class AlarmServiceBridge {
       );
       
       if (success) {
-        print('✅ AlarmServiceBridge: Successfully scheduled basic alarm via ReliableAlarmService');
+        print('✅ AlarmServiceBridge: Successfully scheduled basic alarm via AlarmService');
       } else {
-        print('❌ AlarmServiceBridge: Failed to schedule basic alarm via ReliableAlarmService');
+        print('❌ AlarmServiceBridge: Failed to schedule basic alarm via AlarmService');
       }
       
       return success;
@@ -91,17 +92,17 @@ class AlarmServiceBridge {
     }
   }
   
-  /// Cancel alarm from ReliableAlarmService
+  /// Cancel alarm from AlarmService
   static Future<bool> cancelWithReliableService(int id) async {
     try {
-      print('🌉 AlarmServiceBridge: Cancelling alarm via ReliableAlarmService - ID: $id');
+      print('🌉 AlarmServiceBridge: Cancelling alarm via AlarmService - ID: $id');
       
-      final success = await ReliableAlarmService.cancelAlarm(id);
+      final success = await AlarmService.cancelAlarm(id);
       
       if (success) {
-        print('✅ AlarmServiceBridge: Successfully cancelled via ReliableAlarmService');
+        print('✅ AlarmServiceBridge: Successfully cancelled via AlarmService');
       } else {
-        print('⚠️ AlarmServiceBridge: Failed to cancel via ReliableAlarmService');
+        print('⚠️ AlarmServiceBridge: Failed to cancel via AlarmService');
       }
       
       return success;

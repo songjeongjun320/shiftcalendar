@@ -1,20 +1,55 @@
 import 'dart:async';
 import 'package:alarm/alarm.dart';
-import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 
-/// Reliable alarm service using the alarm package with foreground service
-/// This replaces flutter_local_notifications for scheduled alarms
-class ReliableAlarmService {
+/// Main alarm service using the alarm package with foreground service
+/// This is the primary alarm system for the app
+class AlarmService {
   static StreamSubscription<AlarmSettings>? _alarmStreamSubscription;
   
   /// Initialize the alarm service
   static Future<void> initialize() async {
-    await Alarm.init();
-    print('✅ Reliable alarm service initialized');
-    
-    // Listen for alarm triggers and automatically show alarm screen
-    _startAlarmListener();
+    try {
+      // Clear any corrupted alarm data first
+      await _clearCorruptedAlarmData();
+      
+      await Alarm.init();
+      
+      // Listen for alarm triggers and automatically show alarm screen
+      _startAlarmListener();
+    } catch (e) {
+      print('❌ Error during alarm initialization: $e');
+      // Continue app startup even if alarm init fails
+      print('⚠️ Continuing app startup without alarm service');
+    }
+  }
+  
+  /// Clear corrupted alarm data that might cause JSON parsing errors
+  static Future<void> _clearCorruptedAlarmData() async {
+    try {
+      // Clear all stored alarm data to avoid JSON parsing errors
+      // This will remove any corrupted alarm settings from SharedPreferences
+      print('🧹 Clearing potentially corrupted alarm data...');
+      
+      // Import shared_preferences for cleaning
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Remove any alarm-related keys that might be corrupted
+      final keys = prefs.getKeys();
+      for (String key in keys) {
+        if (key.startsWith('alarm_') || key.contains('AlarmSettings')) {
+          await prefs.remove(key);
+          print('🗑️ Removed corrupted key: $key');
+        }
+      }
+      
+      print('✅ Alarm data cleanup completed');
+      
+    } catch (e) {
+      print('⚠️ Error during alarm data cleanup: $e');
+      // Continue anyway
+    }
   }
   
   /// Start listening for alarm triggers
@@ -26,7 +61,7 @@ class ReliableAlarmService {
     _alarmStreamSubscription = Alarm.ringStream.stream.listen(
       (alarmSettings) {
         print('🚨 ALARM RINGING! ID: ${alarmSettings.id}');
-        print('📋 Alarm details: ${alarmSettings.notificationTitle}');
+        print('📋 Alarm details: ${alarmSettings.notificationSettings.title}');
         
         // Automatically show alarm screen
         _showAlarmScreenFromStream(alarmSettings);
@@ -48,11 +83,11 @@ class ReliableAlarmService {
       final payload = {
         'type': 'reliable_alarm',
         'alarmId': alarmSettings.id.toString(),
-        'title': alarmSettings.notificationTitle,
-        'message': alarmSettings.notificationBody,
+        'title': alarmSettings.notificationSettings.title,
+        'message': alarmSettings.notificationSettings.body,
         'notificationId': alarmSettings.id,
         'alarmTone': alarmSettings.assetAudioPath,
-        'alarmVolume': alarmSettings.volume,
+        'alarmVolume': alarmSettings.volumeSettings.volume ?? 0.8,
       };
       
       // Try to navigate to alarm screen
@@ -83,18 +118,32 @@ class ReliableAlarmService {
     bool vibrate = true,
   }) async {
     try {
-      // Create alarm settings
+      // Validate input parameters first
+      if (title.isEmpty) {
+        print('⚠️ Warning: Empty title provided, using default');
+        title = 'Alarm';
+      }
+      
+      if (message.isEmpty) {
+        print('⚠️ Warning: Empty message provided, using default');
+        message = 'Time for your alarm!';
+      }
+      
+      // Create alarm settings with explicit validation
       final alarmSettings = AlarmSettings(
         id: id,
         dateTime: scheduledTime,
-        assetAudioPath: soundPath ?? 'sounds/wakeupcall.mp3',
+        assetAudioPath: soundPath ?? 'assets/sounds/wakeupcall.mp3',
         loopAudio: true,  // Keep playing until dismissed
         vibrate: vibrate,
-        volume: volume,
-        fadeDuration: 3.0,  // Gradually increase volume
-        notificationTitle: title,
-        notificationBody: message,
-        enableNotificationOnKill: true,  // Show notification if app is killed
+        volumeSettings: VolumeSettings.fade(
+          volume: volume.clamp(0.0, 1.0), // Ensure volume is valid
+          fadeDuration: const Duration(seconds: 3),
+        ),
+        notificationSettings: NotificationSettings(
+          title: title.trim(),
+          body: message.trim(),
+        ),
         
         // Android specific settings for reliability
         androidFullScreenIntent: true,  // Show fullscreen when locked
@@ -115,6 +164,10 @@ class ReliableAlarmService {
       return success;
     } catch (e) {
       print('❌ Error scheduling reliable alarm: $e');
+      print('❌ Error details: ${e.toString()}');
+      
+      // Try to continue without the alarm service backup
+      print('⚠️ Continuing without reliable alarm backup for ID: $id');
       return false;
     }
   }
@@ -136,20 +189,21 @@ class ReliableAlarmService {
   }
   
   /// Get all currently scheduled alarms
-  static List<AlarmSettings> getAllAlarms() {
-    return Alarm.getAlarms();
+  static Future<List<AlarmSettings>> getAllAlarms() async {
+    return await Alarm.getAlarms();
   }
   
   /// Check if a specific alarm is scheduled
   static Future<bool> isAlarmSet(int id) async {
     final isRinging = await Alarm.isRinging(id);
-    final isScheduled = getAllAlarms().any((alarm) => alarm.id == id);
+    final alarms = await getAllAlarms();
+    final isScheduled = alarms.any((alarm) => alarm.id == id);
     return isRinging || isScheduled;
   }
   
   /// Stop all currently ringing alarms
   static Future<void> stopAllAlarms() async {
-    final alarms = getAllAlarms();
+    final alarms = await getAllAlarms();
     for (final alarm in alarms) {
       final isRinging = await Alarm.isRinging(alarm.id);
       if (isRinging) {

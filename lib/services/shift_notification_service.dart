@@ -6,17 +6,24 @@ import '../models/shift_alarm.dart';
 import '../models/shift_pattern.dart';
 import 'shift_scheduling_service.dart';
 import 'alarm_service_bridge.dart';
+import 'shift_alarm_manager.dart';
+import 'basic_alarm_service.dart';
 
 class ShiftNotificationService {
   final FlutterLocalNotificationsPlugin _notifications;
   final ShiftSchedulingService _schedulingService;
+  late final ShiftAlarmManager _shiftAlarmManager;
   
   // Notification channel constants
   static const String _channelId = 'shift_alarm_channel';
   static const String _channelName = 'Shift Alarms';
   static const String _channelDescription = 'Notifications for shift-based alarms';
   
-  ShiftNotificationService(this._notifications, this._schedulingService);
+  ShiftNotificationService(this._notifications, this._schedulingService) {
+    // Initialize ShiftAlarmManager with BasicAlarmService
+    final basicAlarmService = BasicAlarmService(_notifications);
+    _shiftAlarmManager = ShiftAlarmManager(basicAlarmService, ""); // Pass empty string for patternId
+  }
   
   /// Initialize notification system with shift-specific settings
   Future<void> initialize() async {
@@ -128,7 +135,50 @@ class ShiftNotificationService {
   }
   
   /// Schedule all alarms for a shift pattern
+  /// NEW SIMPLE APPROACH: Use BasicAlarm system instead of complex scheduling
   Future<void> scheduleShiftAlarms(
+    List<ShiftAlarm> alarms, 
+    ShiftPattern pattern,
+  ) async {
+    print('🚀 NEW SHIFT ALARM SYSTEM: Converting to BasicAlarms...');
+    print('   Pattern: ${pattern.name}');
+    print('   Total alarms: ${alarms.length}');
+    print('   Active alarms: ${alarms.where((a) => a.isActive).length}');
+    print('   Inactive alarms: ${alarms.where((a) => !a.isActive).length}');
+    
+    // IMPORTANT: Cancel BasicAlarms for ALL alarms (active and inactive)
+    // This ensures that disabled alarms are properly cancelled
+    for (final alarm in alarms) {
+      print('🗑️ Cancelling existing BasicAlarms for: ${alarm.title} (active: ${alarm.isActive})');
+      await _shiftAlarmManager.cancelShiftAlarms(alarm.id);
+    }
+    
+    // Only schedule BasicAlarms for ACTIVE ShiftAlarms
+    for (final alarm in alarms.where((a) => a.isActive)) {
+      try {
+        print('📋 Processing ACTIVE ShiftAlarm: ${alarm.title}');
+        
+        // This will create multiple BasicAlarms for upcoming shift dates
+        // Each BasicAlarm will be scheduled for immediate dates (today/tomorrow)
+        // instead of complex future calculations
+        final createdBasicAlarms = await _shiftAlarmManager.scheduleShiftAlarmsAsBasicAlarms(
+          alarm, 
+          pattern,
+        );
+        
+        print('✅ Created ${createdBasicAlarms.length} BasicAlarms for ${alarm.title}');
+        
+      } catch (e) {
+        print('❌ Error processing ShiftAlarm ${alarm.title}: $e');
+      }
+    }
+    
+    print('🎉 NEW SHIFT ALARM SYSTEM: All shift alarms processed successfully!');
+    print('   Active alarms scheduled, inactive alarms cancelled');
+  }
+
+  /// LEGACY METHOD: Keep for compatibility but deprecated
+  Future<void> scheduleShiftAlarmsLegacy(
     List<ShiftAlarm> alarms, 
     ShiftPattern pattern,
   ) async {
@@ -259,11 +309,11 @@ class ShiftNotificationService {
       final foundAlarm = pending.where((req) => req.id == notificationId).firstOrNull;
       
       if (foundAlarm != null) {
-        print('✅ Verification: Alarm ${notificationId} found in pending list');
+        print('✅ Verification: Alarm $notificationId found in pending list');
         print('   Title: ${foundAlarm.title}');
         print('   Body: ${foundAlarm.body}');
       } else {
-        print('❌ Verification FAILED: Alarm ${notificationId} NOT found in pending list!');
+        print('❌ Verification FAILED: Alarm $notificationId NOT found in pending list!');
         print('   Expected time: $expectedTime');
         print('   Total pending alarms: ${pending.length}');
       }

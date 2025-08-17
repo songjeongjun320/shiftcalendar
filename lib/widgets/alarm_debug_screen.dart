@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shiftcalendar/services/alarm_service.dart';
+import 'package:alarm/alarm.dart';
+import '../models/basic_alarm.dart';
+import '../models/alarm_enums.dart';
 import '../services/alarm_diagnostic_service.dart';
 import '../services/alarm_trigger_validator.dart';
-import '../services/alarm_test_service.dart';
 import '../services/alarm_system_monitor.dart';
-import '../services/reliable_alarm_service.dart';
 import '../services/basic_alarm_service.dart';
-import '../services/shift_notification_service.dart';
 import '../services/alarm_service_bridge.dart';
-import '../models/basic_alarm.dart';
-import '../models/shift_alarm.dart';
-import '../models/shift_pattern.dart';
-import '../models/shift_type.dart';
+import '../services/shift_alarm_manager.dart';
 
 class AlarmDebugScreen extends StatefulWidget {
   final AlarmDiagnosticService diagnosticService;
@@ -30,14 +28,17 @@ class AlarmDebugScreen extends StatefulWidget {
 class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
   Map<String, dynamic>? _systemState;
   bool _isLoading = false;
-  late final AlarmTestService _testService;
   late final AlarmSystemMonitor _systemMonitor;
   
   @override
   void initState() {
     super.initState();
-    _testService = AlarmTestService(widget.diagnosticService.notifications);
     _systemMonitor = AlarmSystemMonitor(widget.diagnosticService.notifications);
+    
+    // Initialize ShiftAlarmManager with BasicAlarmService
+    final basicAlarmService = BasicAlarmService(widget.diagnosticService.notifications);
+    ShiftAlarmManager(basicAlarmService, ""); // Pass empty string for patternId
+    
     _loadSystemState();
   }
   
@@ -533,13 +534,52 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () async {
-                            await _testService.testImmediateAlarm();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Test alarm scheduled for 5 seconds from now'),
-                                duration: Duration(seconds: 3),
-                              ),
-                            );
+                            try {
+                              print('🧪 ================================');
+                              print('🧪 TESTING IMMEDIATE ALARM (5s) - USING ALARM SERVICE');
+                              print('⏰ Current time: ${DateTime.now()}');
+                              print('🔧 Switching to AlarmService for consistent results');
+                              
+                              // Use AlarmService instead of AlarmTestService
+                              final testTime = DateTime.now().add(Duration(seconds: 5));
+                              final success = await AlarmService.scheduleAlarm(
+                                id: 99997, // Unique test ID
+                                scheduledTime: testTime,
+                                title: '🧪 TEST ALARM (5s)',
+                                message: 'This is a 5-second test using AlarmService',
+                                volume: 0.9,
+                              );
+                              
+                              if (success) {
+                                print('✅ Test alarm scheduled successfully using AlarmService!');
+                                print('🧪 IMMEDIATE ALARM TEST COMPLETED');
+                                print('🧪 ================================');
+                                
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('✅ Test alarm scheduled for 5 seconds (AlarmService)'),
+                                    backgroundColor: Colors.green,
+                                    duration: Duration(seconds: 3),
+                                  ),
+                                );
+                              } else {
+                                throw Exception('AlarmService.scheduleAlarm returned false');
+                              }
+                            } catch (e, stackTrace) {
+                              print('❌ ================================');
+                              print('❌ Test 5s alarm failed: $e');
+                              print('❌ Stack trace: $stackTrace');
+                              print('❌ ================================');
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('❌ Test 5s failed: $e'),
+                                    backgroundColor: Colors.red,
+                                    duration: const Duration(seconds: 4),
+                                  ),
+                                );
+                              }
+                            }
                           },
                           icon: const Icon(Icons.alarm_add, size: 16),
                           label: const Text('Test 5s', style: TextStyle(fontSize: 12)),
@@ -549,13 +589,52 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () async {
-                            await _testService.testDelayedAlarm();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Test alarm scheduled for 30 seconds from now'),
-                                duration: Duration(seconds: 3),
-                              ),
-                            );
+                            try {
+                              print('🧪 ================================');
+                              print('🧪 TESTING DELAYED ALARM (30s) - USING ALARM SERVICE');
+                              print('⏰ Current time: ${DateTime.now()}');
+                              print('🔧 Switching to AlarmService for consistent results');
+                              
+                              // Use AlarmService instead of AlarmTestService
+                              final testTime = DateTime.now().add(Duration(seconds: 30));
+                              final success = await AlarmService.scheduleAlarm(
+                                id: 99996, // Unique test ID
+                                scheduledTime: testTime,
+                                title: '🧪 TEST ALARM (30s)',
+                                message: 'This is a 30-second test using AlarmService',
+                                volume: 0.9,
+                              );
+                              
+                              if (success) {
+                                print('✅ Delayed test alarm scheduled successfully using AlarmService!');
+                                print('🧪 DELAYED ALARM TEST COMPLETED');
+                                print('🧪 ================================');
+                                
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('✅ Test alarm scheduled for 30 seconds (AlarmService)'),
+                                    backgroundColor: Colors.green,
+                                    duration: Duration(seconds: 3),
+                                  ),
+                                );
+                              } else {
+                                throw Exception('AlarmService.scheduleAlarm returned false');
+                              }
+                            } catch (e, stackTrace) {
+                              print('❌ ================================');
+                              print('❌ Test 30s alarm failed: $e');
+                              print('❌ Stack trace: $stackTrace');
+                              print('❌ ================================');
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('❌ Test 30s failed: $e'),
+                                    backgroundColor: Colors.red,
+                                    duration: const Duration(seconds: 4),
+                                  ),
+                                );
+                              }
+                            }
                           },
                           icon: const Icon(Icons.timer, size: 16),
                           label: const Text('Test 30s', style: TextStyle(fontSize: 12)),
@@ -565,13 +644,40 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () async {
-                            await _testService.cancelTestAlarms();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Test alarms cancelled'),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
+                            try {
+                              print('🧹 Cancelling all test alarms (AlarmService)...');
+                              
+                              // Cancel specific test alarm IDs
+                              await AlarmService.cancelAlarm(99996); // 30s test
+                              await AlarmService.cancelAlarm(99997); // 5s test
+                              await AlarmService.cancelAlarm(99999); // Original test
+                              
+                              // Cancel new Day/Night/Day Off test alarm IDs
+                              await AlarmService.cancelAlarm(99994); // day_shift test
+                              await AlarmService.cancelAlarm(99993); // night_shift test
+                              await AlarmService.cancelAlarm(99992); // day_off test
+                              
+                              // All test alarm IDs cancelled via AlarmService
+                              
+                              print('✅ All test alarms cancelled');
+                              
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('✅ Test alarms cancelled (AlarmService)'),
+                                  backgroundColor: Colors.orange,
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            } catch (e) {
+                              print('❌ Error cancelling test alarms: $e');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('❌ Cancel failed: $e'),
+                                  backgroundColor: Colors.red,
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
+                            }
                           },
                           icon: const Icon(Icons.clear, size: 16),
                           label: const Text('Cancel', style: TextStyle(fontSize: 12)),
@@ -692,7 +798,7 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
                         child: ElevatedButton.icon(
                           onPressed: () async {
                             try {
-                              final success = await ReliableAlarmService.testImmediateAlarm();
+                              final success = await AlarmService.testImmediateAlarm();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(success 
@@ -722,7 +828,7 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () async {
-                            await ReliableAlarmService.stopAllAlarms();
+                            await AlarmService.stopAllAlarms();
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('🛑 All reliable alarms stopped'),
@@ -740,13 +846,24 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    'Active alarms: ${ReliableAlarmService.getAllAlarms().length}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.green.shade700,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  FutureBuilder<List<AlarmSettings>>(
+                    future: AlarmService.getAllAlarms(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Text('Active alarms: Loading...', style: TextStyle(fontSize: 12));
+                      }
+                      if (snapshot.hasError) {
+                        return Text('Active alarms: Error', style: TextStyle(fontSize: 12, color: Colors.red));
+                      }
+                      return Text(
+                        'Active alarms: ${snapshot.data?.length ?? 0}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.green.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -780,7 +897,7 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Test all alarm types with ReliableAlarmService integration. Each test schedules for 10 seconds.',
+                    'Test all alarm types with AlarmService integration. Each test schedules for 10 seconds.',
                     style: TextStyle(fontSize: 12),
                   ),
                   const SizedBox(height: 12),
@@ -977,13 +1094,18 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
     );
   }
   
-  /// Test basic alarm integration with ReliableAlarmService
+  /// Test basic alarm integration with AlarmService
   Future<void> _testBasicAlarmIntegration() async {
     try {
-      print('🧪 Testing BasicAlarm integration with ReliableAlarmService...');
+      print('🧪 ================================');
+      print('🧪 STARTING BASIC ALARM INTEGRATION TEST');
+      print('🧪 Testing BasicAlarm integration with AlarmService...');
+      print('⏰ Current time: ${DateTime.now()}');
       
       // Create a test basic alarm scheduled for 10 seconds from now
       final testTime = DateTime.now().add(const Duration(seconds: 10));
+      print('🎯 Target alarm time: $testTime');
+      
       final basicAlarm = BasicAlarm(
         id: 'test_basic_alarm_${DateTime.now().millisecondsSinceEpoch}',
         label: 'TEST Basic Alarm',
@@ -995,17 +1117,26 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
         createdAt: DateTime.now(),
       );
       
-      print('Created test BasicAlarm: ${basicAlarm.label}');
-      print('Scheduled for: ${testTime.hour.toString().padLeft(2, '0')}:${testTime.minute.toString().padLeft(2, '0')}');
-      print('Tone: ${basicAlarm.tone.name} (${basicAlarm.tone.soundPath})');
-      print('Volume: ${basicAlarm.volume}');
+      print('📋 Created test BasicAlarm: ${basicAlarm.label}');
+      print('📅 Scheduled for: ${testTime.hour.toString().padLeft(2, '0')}:${testTime.minute.toString().padLeft(2, '0')}');
+      print('🎵 Tone: ${basicAlarm.tone.name} (${basicAlarm.tone.soundPath})');
+      print('🔊 Volume: ${basicAlarm.volume}');
+      print('🔄 Testing alarm ID: ${basicAlarm.id}');
       
       // Create BasicAlarmService instance
+      print('🏗️ Creating BasicAlarmService instance...');
       final basicAlarmService = BasicAlarmService(widget.diagnosticService.notifications);
+      print('⚙️ Initializing BasicAlarmService...');
       await basicAlarmService.initialize();
+      print('✅ BasicAlarmService initialized successfully');
       
-      // Schedule the alarm (this will use both notification and ReliableAlarmService)
+      // Schedule the alarm directly via service (this will use both notification and AlarmService)
+      print('📢 Scheduling test alarm via BasicAlarmService...');
       await basicAlarmService.scheduleBasicAlarm(basicAlarm);
+      
+      print('✅ BasicAlarm scheduled via BasicAlarmService (includes both notification and reliable service integration)');
+      print('🧪 BASIC ALARM INTEGRATION TEST COMPLETED SUCCESSFULLY');
+      print('🧪 ================================');
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1017,10 +1148,12 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
         );
       }
       
-      print('✅ BasicAlarm integration test initiated successfully');
-      
-    } catch (e) {
-      print('❌ BasicAlarm integration test failed: $e');
+    } catch (e, stackTrace) {
+      print('❌ ================================');
+      print('❌ BASIC ALARM INTEGRATION TEST FAILED');
+      print('❌ Error: $e');
+      print('❌ Stack trace: $stackTrace');
+      print('❌ ================================');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1033,109 +1166,49 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
     }
   }
   
-  /// Test shift alarm integration with ReliableAlarmService
+  /// Test shift alarm integration using AlarmService directly (same as Test 5s/30s)
   Future<void> _testShiftAlarmIntegration(String shiftTypeString) async {
     try {
-      print('🧪 Testing ShiftAlarm ($shiftTypeString) integration with ReliableAlarmService...');
+      print('🧪 ================================');
+      print('🧪 TESTING $shiftTypeString ALARM (10s) - USING ALARM SERVICE');
+      print('⏰ Current time: ${DateTime.now()}');
+      print('🔧 Using AlarmService directly for consistent results (same as Test 5s/30s)');
       
-      // Map string to actual ShiftType enum
-      ShiftType targetShiftType;
+      // Determine alarm ID, title, and message based on shift type
+      int alarmId;
+      String title;
+      String message;
+      
       switch (shiftTypeString) {
         case 'day_shift':
-          targetShiftType = ShiftType.day;
+          alarmId = 99994;
+          title = '🧪 TEST DAY SHIFT ALARM (10s)';
+          message = 'This is a Day Shift test using AlarmService';
           break;
         case 'night_shift':
-          targetShiftType = ShiftType.night;
+          alarmId = 99993;
+          title = '🧪 TEST NIGHT SHIFT ALARM (10s)';
+          message = 'This is a Night Shift test using AlarmService';
           break;
         case 'day_off':
-          targetShiftType = ShiftType.off;
+          alarmId = 99992;
+          title = '🧪 TEST DAY OFF ALARM (10s)';
+          message = 'This is a Day Off test using AlarmService';
           break;
         default:
-          targetShiftType = ShiftType.day;
+          alarmId = 99991;
+          title = '🧪 TEST UNKNOWN SHIFT ALARM (10s)';
+          message = 'This is an unknown shift test using AlarmService';
       }
       
-      // Create test shift pattern - simplified for testing
-      final testPattern = ShiftPattern(
-        id: 'test_pattern_${DateTime.now().millisecondsSinceEpoch}',
-        name: 'Test Pattern',
-        cycle: [targetShiftType], // Simple single-shift cycle for testing
-        startDate: DateTime.now(),
-        isActive: true,
-        createdAt: DateTime.now(),
-      );
-      
-      // Create test alarm settings with different tones for each shift type
-      AlarmTone testTone;
-      switch (shiftTypeString) {
-        case 'day_shift':
-          testTone = AlarmTone.wakeupcall;
-          break;
-        case 'night_shift':
-          testTone = AlarmTone.emergencyAlarm;
-          break;
-        case 'day_off':
-          testTone = AlarmTone.gentleAcoustic;
-          break;
-        default:
-          testTone = AlarmTone.wakeupcall;
-      }
-      
-      final alarmSettings = AlarmSettings(
-        vibration: true,
-        sound: true,
-        tone: testTone,
-        volume: 0.9,
-        snooze: true,
-        snoozeDuration: 10,
-        maxSnoozeCount: 3,
-      );
-      
-      // Map shift type string to AlarmType
-      AlarmType alarmType;
-      switch (shiftTypeString) {
-        case 'day_shift':
-          alarmType = AlarmType.day;
-          break;
-        case 'night_shift':
-          alarmType = AlarmType.night;
-          break;
-        case 'day_off':
-          alarmType = AlarmType.off;
-          break;
-        default:
-          alarmType = AlarmType.day;
-      }
-      
-      // Create test shift alarm scheduled for 10 seconds from now
-      final testTime = DateTime.now().add(const Duration(seconds: 10));
-      final shiftAlarm = ShiftAlarm(
-        id: 'test_shift_alarm_${shiftTypeString}_${DateTime.now().millisecondsSinceEpoch}',
-        patternId: testPattern.id,
-        alarmType: alarmType,
-        targetShiftTypes: {targetShiftType},
-        time: TimeOfDay(hour: testTime.hour, minute: testTime.minute),
-        title: 'TEST ${shiftTypeString.toUpperCase()} Alarm',
-        message: 'This is a test alarm for $shiftTypeString',
-        isActive: true,
-        settings: alarmSettings,
-        createdAt: DateTime.now(),
-      );
-      
-      print('Created test ShiftAlarm: ${shiftAlarm.title}');
-      print('Pattern: ${testPattern.name} (cycle: ${testPattern.cycle.map((s) => s.name).join(', ')})');
-      print('Tone: ${testTone.name} (${testTone.soundPath})');
-      print('Volume: ${alarmSettings.volume}');
-      
-      // Create a simplified scheduled notification for testing
-      final notificationId = DateTime.now().millisecondsSinceEpoch;
-      
-      // Use AlarmServiceBridge directly for testing
-      final success = await AlarmServiceBridge.scheduleWithReliableService(
-        id: notificationId,
+      // Use AlarmService directly (same pattern as Test 5s/30s)
+      final testTime = DateTime.now().add(Duration(seconds: 10));
+      final success = await AlarmService.scheduleAlarm(
+        id: alarmId,
         scheduledTime: testTime,
-        title: shiftAlarm.title,
-        message: shiftAlarm.message,
-        settings: alarmSettings,
+        title: title,
+        message: message,
+        volume: 0.9,
       );
       
       String displayName;
@@ -1153,26 +1226,33 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
           displayName = shiftTypeString;
       }
       
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(success 
-              ? '✅ Test $displayName alarm scheduled for 10 seconds with ${testTone.displayName} tone'
-              : '⚠️ Test $displayName alarm creation attempted but may have failed'),
-            backgroundColor: success ? _getShiftColor(shiftTypeString) : Colors.orange,
-            duration: const Duration(seconds: 4),
-          ),
-        );
+      if (success) {
+        print('✅ $displayName test alarm scheduled successfully using AlarmService!');
+        print('🧪 $displayName ALARM TEST COMPLETED');
+        print('🧪 ================================');
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('✅ Test $displayName scheduled for 10 seconds (AlarmService)'),
+              backgroundColor: _getShiftColor(shiftTypeString),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      } else {
+        throw Exception('AlarmService.scheduleAlarm returned false');
       }
       
-      print('✅ ShiftAlarm ($shiftTypeString) integration test initiated successfully');
-      
-    } catch (e) {
-      print('❌ ShiftAlarm ($shiftTypeString) integration test failed: $e');
+    } catch (e, stackTrace) {
+      print('❌ ================================');
+      print('❌ Test $shiftTypeString alarm failed: $e');
+      print('❌ Stack trace: $stackTrace');
+      print('❌ ================================');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('❌ $shiftTypeString test failed: $e'),
+            content: Text('❌ Test $shiftTypeString failed: $e'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 4),
           ),
@@ -1194,9 +1274,14 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
         if (request.title?.contains('TEST') == true) {
           await widget.diagnosticService.notifications.cancel(request.id);
           
-          // Also try to cancel from ReliableAlarmService
+          // Also try to cancel from AlarmService
           try {
+            // Try to cancel both the notification ID and the corresponding reliable alarm ID
             await AlarmServiceBridge.cancelWithReliableService(request.id);
+            if (request.id > 1000) {
+              // Also try the base ID (without +1000 offset)
+              await AlarmServiceBridge.cancelWithReliableService(request.id - 1000);
+            }
           } catch (e) {
             print('⚠️ Could not cancel reliable alarm ${request.id}: $e');
           }
@@ -1207,7 +1292,7 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
       }
       
       // Also stop all reliable alarms (test alarms use high IDs)
-      await ReliableAlarmService.stopAllAlarms();
+      await AlarmService.stopAllAlarms();
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

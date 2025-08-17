@@ -122,18 +122,6 @@ abstract class AppLocalizations {
   /// **'Create Pattern'**
   String get createPattern;
 
-  /// No description provided for @useSamplePattern.
-  ///
-  /// In en, this message translates to:
-  /// **'Use Sample Pattern'**
-  String get useSamplePattern;
-
-  /// No description provided for @samplePatternDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Pattern: Day-Day-Night-Night-Off-Off'**
-  String get samplePatternDescription;
-
   /// No description provided for @currentPattern.
   ///
   /// In en, this message translates to:

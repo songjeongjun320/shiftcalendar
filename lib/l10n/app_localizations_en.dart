@@ -22,12 +22,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createPattern => 'Create Pattern';
 
   @override
-  String get useSamplePattern => 'Use Sample Pattern';
-
-  @override
-  String get samplePatternDescription => 'Pattern: Day-Day-Night-Night-Off-Off';
-
-  @override
   String get currentPattern => 'Current Pattern';
 
   @override

@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import '../services/reliable_alarm_service.dart';
+import '../services/alarm_service.dart';
 
 class AlarmScreen extends StatefulWidget {
   final String alarmTitle;
@@ -30,6 +29,7 @@ class AlarmScreen extends StatefulWidget {
 
 class _AlarmScreenState extends State<AlarmScreen> with TickerProviderStateMixin {
   final AudioPlayer _audioPlayer = AudioPlayer();
+  VolumeController get _volumeController => VolumeController.instance;
   late AnimationController _pulseController;
   late AnimationController _shakeController;
   late Animation<double> _pulseAnimation;
@@ -40,7 +40,7 @@ class _AlarmScreenState extends State<AlarmScreen> with TickerProviderStateMixin
   double _originalVolume = 0.5;
   double _originalBrightness = 0.5;
   bool _canDismiss = false;
-  int _dismissTapsRequired = 3;
+  final int _dismissTapsRequired = 3;
   int _currentTaps = 0;
   bool _isSnoozing = false;
 
@@ -83,8 +83,7 @@ class _AlarmScreenState extends State<AlarmScreen> with TickerProviderStateMixin
       print('Wake lock enabled');
       
       // Save original settings
-      final volume = await VolumeController().getVolume();
-      _originalVolume = volume ?? 0.5;
+      _originalVolume = await _volumeController.getVolume();
       
       try {
         _originalBrightness = await ScreenBrightness().current;
@@ -94,7 +93,7 @@ class _AlarmScreenState extends State<AlarmScreen> with TickerProviderStateMixin
       }
       
       // Set maximum volume and brightness for alarm
-      VolumeController().setVolume(widget.alarmVolume ?? 0.9);
+      await _volumeController.setVolume(widget.alarmVolume ?? 0.9);
       
       try {
         await ScreenBrightness().setScreenBrightness(1.0);
@@ -114,7 +113,9 @@ class _AlarmScreenState extends State<AlarmScreen> with TickerProviderStateMixin
 
   Future<void> _startAlarmSound() async {
     try {
-      await _audioPlayer.stop();
+      if (_audioPlayer.state == PlayerState.playing) {
+        await _audioPlayer.stop();
+      }
       
       final soundPath = widget.alarmTone ?? 'sounds/wakeupcall.mp3';
       print('Playing alarm sound: $soundPath');
@@ -148,7 +149,7 @@ class _AlarmScreenState extends State<AlarmScreen> with TickerProviderStateMixin
       if (currentVolume < targetVolume) {
         currentVolume += 0.1;
         _audioPlayer.setVolume(currentVolume.clamp(0.0, 1.0));
-        VolumeController().setVolume(currentVolume.clamp(0.0, 1.0));
+        _volumeController.setVolume(currentVolume.clamp(0.0, 1.0));
       } else {
         timer.cancel();
       }
@@ -213,8 +214,10 @@ class _AlarmScreenState extends State<AlarmScreen> with TickerProviderStateMixin
   Future<void> _stopAlarmAndRestore() async {
     try {
       // Stop audio
-      await _audioPlayer.stop();
-      await _audioPlayer.dispose();
+      if (_audioPlayer.state == PlayerState.playing) {
+        await _audioPlayer.stop();
+      }
+      _audioPlayer.dispose();
       
       // Cancel timers
       _volumeTimer?.cancel();
@@ -222,13 +225,13 @@ class _AlarmScreenState extends State<AlarmScreen> with TickerProviderStateMixin
       // IMPORTANT: Stop reliable alarm service
       if (widget.notificationId != null) {
         print('🛑 Stopping reliable alarm ID: ${widget.notificationId}');
-        final reliableSuccess = await ReliableAlarmService.cancelAlarm(widget.notificationId!);
+        final reliableSuccess = await AlarmService.cancelAlarm(widget.notificationId!);
         if (reliableSuccess) {
           print('✅ Reliable alarm stopped successfully');
         } else {
           print('⚠️ Failed to stop reliable alarm - trying manual stop');
           // Try to stop all alarms as fallback
-          await ReliableAlarmService.stopAllAlarms();
+          await AlarmService.stopAllAlarms();
         }
       }
       
@@ -240,7 +243,7 @@ class _AlarmScreenState extends State<AlarmScreen> with TickerProviderStateMixin
       }
       
       // Restore original settings
-      VolumeController().setVolume(_originalVolume);
+      await _volumeController.setVolume(_originalVolume);
       
       try {
         await ScreenBrightness().setScreenBrightness(_originalBrightness);
@@ -437,7 +440,7 @@ class _AlarmScreenState extends State<AlarmScreen> with TickerProviderStateMixin
                         )
                       else
                         Text(
-                          '끄기 버튼을 ${_dismissTapsRequired}번 누르세요',
+                          '끄기 버튼을 $_dismissTapsRequired번 누르세요',
                           style: TextStyle(
                             color: Colors.white60,
                             fontSize: 14,

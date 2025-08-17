@@ -3,8 +3,6 @@
   "welcomeTitle": "Welcome to Shift Calendar",
   "welcomeDescription": "Create shift patterns that automatically schedule alarms based on your work cycle, not fixed weekdays.",
   "createPattern": "Create Pattern",
-  "useSamplePattern": "Use Sample Pattern",
-  "samplePatternDescription": "Pattern: Day-Day-Night-Night-Off-Off",
   
   "currentPattern": "Current Pattern",
   "todayShift": "Today's Shift",

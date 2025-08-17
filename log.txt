@@ -1,35 +1,456 @@
-I/flutter ( 9303): === BASIC ALARM SCHEDULING COMPLETED ===
-I/flutter ( 9303): Basic alarm scheduling completed
-I/flutter ( 9303): === BASIC ALARM SAVE COMPLETE ===
-I/flutter ( 9303): 🔍 Validator check at 00:54:00
-I/flutter ( 9303): 🎯 ALARM DUE NOW!
-I/flutter ( 9303):    ID: 753854853
-I/flutter ( 9303):    Title: 새 알람
-I/flutter ( 9303):    Scheduled: 2025-08-15 00:54:00.000
-I/flutter ( 9303):    Time difference: 0 seconds
-I/flutter ( 9303): ✅ No missed or upcoming alarms detected
-D/InsetsController( 9303): hide(ime(), fromIme=false)
-I/ImeTracker( 9303): com.shiftcalendar.shiftcalendar:d65d9b15: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
-I/flutter ( 9303): 🕐 DIAGNOSTIC CHECK: 00:54 (00:54)
-I/flutter ( 9303): 📋 Total pending notifications: 32
-I/flutter ( 9303): ⏰ Alarm notifications: 32
-I/flutter ( 9303): ⏰ ALARM DUE NOW!
-I/flutter ( 9303):    Notification ID: 753854853
-I/flutter ( 9303):    Title: 새 알람
-I/flutter ( 9303):    Scheduled: 2025-08-15 00:54:00.000
-I/flutter ( 9303): 🔔 ALARM SHOULD TRIGGER NOW!
-I/flutter ( 9303):    Notification ID: 753854853
-I/flutter ( 9303):    Title: 새 알람
-I/flutter ( 9303):    Expected time: 2025-08-15 00:54:00.000
-I/flutter ( 9303):    Current time: 2025-08-15 00:54:30.284549
-I/flutter ( 9303): 🧪 Testing manual trigger for notification 753854853
-I/flutter ( 9303): 🔍 Validator check at 00:54:30
-I/flutter ( 9303): 🎯 ALARM DUE NOW!
-I/flutter ( 9303):    ID: 753854853
-I/flutter ( 9303):    Title: 새 알람
-I/flutter ( 9303):    Scheduled: 2025-08-15 00:54:00.000
-I/flutter ( 9303):    Time difference: 30 seconds
-I/flutter ( 9303): ✅ No missed or upcoming alarms detected
-I/flutter ( 9303): ✅ Manual test notification sent successfully
-D/InsetsController( 9303): hide(ime(), fromIme=false)
-I/ImeTracker( 9303): com.shiftcalendar.shiftcalendar:5033b720: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+I/flutter ( 3770): ✅ Alarm screen trigger scheduled with ID: 261752883
+I/flutter ( 3770): ✅ Timer-based alarm screen trigger set for 0 minutes from now
+I/flutter ( 3770): ℹ️ ReliableAlarmService backup temporarily disabled
+I/flutter ( 3770): ✅ Using notification + alarm screen trigger approach instead
+I/flutter ( 3770): === BASIC ALARM SCHEDULING COMPLETED ===
+I/flutter ( 3770): ✅ Created 10 BasicAlarms for ShiftAlarm: Night Shift Alarm
+I/flutter ( 3770): ✅ Created 10 BasicAlarms for Night Shift Alarm
+I/flutter ( 3770): 🎉 NEW SHIFT ALARM SYSTEM: All shift alarms processed successfully!
+I/flutter ( 3770):    Active alarms scheduled, inactive alarms cancelled
+I/flutter ( 3770): ⏰ Timer-based alarm screen trigger firing for alarm c95342df-e4ea-4ab4-b066-43c940c9abd9_basic_2025-08-19_1947
+I/flutter ( 3770): 🎯 Timer: Navigator available - pushing to alarm screen
+I/flutter ( 3770): ⏰ Timer-based alarm screen trigger firing for alarm c95342df-e4ea-4ab4-b066-43c940c9abd9_basic_2025-08-20_1947
+I/flutter ( 3770): 🎯 Timer: Navigator available - pushing to alarm screen
+I/flutter ( 3770): ⏰ Timer-based alarm screen trigger firing for alarm c95342df-e4ea-4ab4-b066-43c940c9abd9_basic_2025-08-25_1947
+I/flutter ( 3770): 🎯 Timer: Navigator available - pushing to alarm screen
+I/flutter ( 3770): ⏰ Timer-based alarm screen trigger firing for alarm c95342df-e4ea-4ab4-b066-43c940c9abd9_basic_2025-08-26_1947
+I/flutter ( 3770): 🎯 Timer: Navigator available - pushing to alarm screen
+I/flutter ( 3770): ⏰ Timer-based alarm screen trigger firing for alarm c95342df-e4ea-4ab4-b066-43c940c9abd9_basic_2025-08-31_1947
+I/flutter ( 3770): 🎯 Timer: Navigator available - pushing to alarm screen
+I/flutter ( 3770): ⏰ Timer-based alarm screen trigger firing for alarm c95342df-e4ea-4ab4-b066-43c940c9abd9_basic_2025-09-07_1947
+I/flutter ( 3770): 🎯 Timer: Navigator available - pushing to alarm screen
+I/flutter ( 3770): ⏰ Timer-based alarm screen trigger firing for alarm c95342df-e4ea-4ab4-b066-43c940c9abd9_basic_2025-09-12_1947
+I/flutter ( 3770): 🎯 Timer: Navigator available - pushing to alarm screen
+I/flutter ( 3770): ⏰ Timer-based alarm screen trigger firing for alarm c95342df-e4ea-4ab4-b066-43c940c9abd9_basic_2025-09-01_1947
+I/flutter ( 3770): 🎯 Timer: Navigator available - pushing to alarm screen
+I/flutter ( 3770): ⏰ Timer-based alarm screen trigger firing for alarm c95342df-e4ea-4ab4-b066-43c940c9abd9_basic_2025-09-06_1947
+I/flutter ( 3770): 🎯 Timer: Navigator available - pushing to alarm screen
+I/flutter ( 3770): ⏰ Timer-based alarm screen trigger firing for alarm c95342df-e4ea-4ab4-b066-43c940c9abd9_basic_2025-09-13_1947
+I/flutter ( 3770): 🎯 Timer: Navigator available - pushing to alarm screen
+I/flutter ( 3770): Wake lock enabled
+I/flutter ( 3770): Wake lock enabled
+I/flutter ( 3770): Wake lock enabled
+I/flutter ( 3770): Wake lock enabled
+I/flutter ( 3770): Wake lock enabled
+I/flutter ( 3770): Wake lock enabled
+I/flutter ( 3770): Wake lock enabled
+I/flutter ( 3770): Wake lock enabled
+I/flutter ( 3770): Wake lock enabled
+I/flutter ( 3770): Wake lock enabled
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+D/AudioSystem( 3770): onNewServiceWithAdapter: media.audio_flinger service obtained 0x7c3e70cc1810
+D/AudioSystem( 3770): getService: checking for service media.audio_flinger: 0x7c3d40c508c0
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/AudioManager( 3770): dispatching onAudioFocusChange(-1) to android.media.AudioManager@7525baxyz.luan.audioplayers.player.ModernFocusManager$$ExternalSyntheticLambda0@407bde7
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/AudioManager( 3770): dispatching onAudioFocusChange(-1) to android.media.AudioManager@7525baxyz.luan.audioplayers.player.ModernFocusManager$$ExternalSyntheticLambda0@ad26d94
+I/AudioManager( 3770): dispatching onAudioFocusChange(-1) to android.media.AudioManager@7525baxyz.luan.audioplayers.player.ModernFocusManager$$ExternalSyntheticLambda0@d73f03d
+I/AudioManager( 3770): dispatching onAudioFocusChange(-1) to android.media.AudioManager@7525baxyz.luan.audioplayers.player.ModernFocusManager$$ExternalSyntheticLambda0@9be1032
+I/AudioManager( 3770): dispatching onAudioFocusChange(-1) to android.media.AudioManager@7525baxyz.luan.audioplayers.player.ModernFocusManager$$ExternalSyntheticLambda0@7885183
+I/AudioManager( 3770): dispatching onAudioFocusChange(-1) to android.media.AudioManager@7525baxyz.luan.audioplayers.player.ModernFocusManager$$ExternalSyntheticLambda0@c32cf00
+I/AudioManager( 3770): dispatching onAudioFocusChange(-1) to android.media.AudioManager@7525baxyz.luan.audioplayers.player.ModernFocusManager$$ExternalSyntheticLambda0@6b45339
+I/AudioManager( 3770): dispatching onAudioFocusChange(-1) to android.media.AudioManager@7525baxyz.luan.audioplayers.player.ModernFocusManager$$ExternalSyntheticLambda0@338fd7e
+I/AudioManager( 3770): dispatching onAudioFocusChange(-1) to android.media.AudioManager@7525baxyz.luan.audioplayers.player.ModernFocusManager$$ExternalSyntheticLambda0@9f482df
+I/flutter ( 3770): 🛑 Stopping reliable alarm ID: 941081826
+D/AlarmApiImpl( 3770): Warning notification is already turned off.
+I/flutter ( 3770): ✅ Alarm cancelled: 941081826
+I/flutter ( 3770): ✅ Reliable alarm stopped successfully
+D/AlarmApiImpl( 3770): Alarm stopped notification for 941081826 was processed successfully by Flutter.
+I/flutter ( 3770): Dismissed notification ID: 941081826
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+I/flutter ( 3770): ✅ Alarm stopped and settings restored
+I/flutter ( 3770): ✅ Timer: Successfully auto-navigated to alarm screen
+I/flutter ( 3770): 🛑 Stopping reliable alarm ID: 941081826
+D/AlarmApiImpl( 3770): Warning notification is already turned off.
+E/flutter ( 3770): [ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: PlatformException(Unexpected AndroidAudioError, Player has not yet been created or has already been disposed., java.lang.IllegalStateException: Player has not yet been created or has already been disposed.
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin.getPlayer(AudioplayersPlugin.kt:209)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin.methodHandler(AudioplayersPlugin.kt:105)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin.access$methodHandler(AudioplayersPlugin.kt:21)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin$onAttachedToEngine$1$1.invoke(AudioplayersPlugin.kt:37)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin$onAttachedToEngine$1$1.invoke(AudioplayersPlugin.kt:37)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin.safeCall(AudioplayersPlugin.kt:56)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin.onAttachedToEngine$lambda$0(AudioplayersPlugin.kt:37)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin.$r8$lambda$1vepZk-E6R5vmkq5YXudNp2pY8I(Unknown Source:0)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin$$ExternalSyntheticLambda0.onMethodCall(D8$$SyntheticClass:0)
+E/flutter ( 3770): 	at io.flutter.plugin.common.MethodChannel$IncomingMethodCallHandler.onMessage(MethodChannel.java:267)
+E/flutter ( 3770): 	at io.flutter.embedding.engine.dart.DartMessenger.invokeHandler(DartMessenger.java:292)
+E/flutter ( 3770): 	at io.flutter.embedding.engine.dart.DartMessenger.lambda$dispatchMessageToQueue$0$io-flutter-embedding-engine-dart-DartMessenger(DartMessenger.java:319)
+E/flutter ( 3770): 	at io.flutter.embedding.engine.dart.DartMessenger$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+E/flutter ( 3770): 	at android.os.Handler.handleCallback(Handler.java:995)
+E/flutter ( 3770): 	at android.os.Handler.dispatchMessage(Handler.java:103)
+E/flutter ( 3770): 	at android.os.Looper.loopOnce(Looper.java:248)
+E/flutter ( 3770): 	at android.os.Looper.loop(Looper.java:338)
+E/flutter ( 3770): 	at android.app.ActivityThread.main(ActivityThread.java:9067)
+E/flutter ( 3770): 	at java.lang.reflect.Method.invoke(Native Method)
+E/flutter ( 3770): 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+E/flutter ( 3770): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+E/flutter ( 3770): , null)
+E/flutter ( 3770): #0      StandardMethodCodec.decodeEnvelope (package:flutter/src/services/message_codecs.dart:652:7)
+E/flutter ( 3770): #1      MethodChannel._invokeMethod (package:flutter/src/services/platform_channel.dart:370:18)
+E/flutter ( 3770): <asynchronous suspension>
+E/flutter ( 3770): #2      AudioPlayer.stop (package:audioplayers/src/audioplayer.dart:259:7)
+E/flutter ( 3770): <asynchronous suspension>
+E/flutter ( 3770): #3      AudioPlayer.release (package:audioplayers/src/audioplayer.dart:286:5)
+E/flutter ( 3770): <asynchronous suspension>
+E/flutter ( 3770): #4      AudioPlayer.dispose (package:audioplayers/src/audioplayer.dart:497:5)
+E/flutter ( 3770): <asynchronous suspension>
+E/flutter ( 3770): 
+I/flutter ( 3770): 🕐 DIAGNOSTIC CHECK: 19:47 (19:47)
+I/flutter ( 3770): ✅ Alarm cancelled: 941081826
+I/flutter ( 3770): ✅ Reliable alarm stopped successfully
+D/AlarmApiImpl( 3770): Alarm stopped notification for 941081826 was processed successfully by Flutter.
+I/flutter ( 3770): 📋 Total pending notifications: 196
+I/flutter ( 3770): ⏰ Alarm notifications: 196
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 8038952
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 472092907
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 644449094
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 937466290
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 405933144
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 155032955
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 789762561
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 81593190
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 832564406
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 957514381
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 818435603
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 977667646
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 467408389
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 1034705152
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 264671949
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 451329511
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 372996866
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 168869923
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): ⏰ ALARM DUE NOW!
+I/flutter ( 3770):    Notification ID: 261752883
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 8038952
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 8038952
+I/flutter ( 3770): 🔍 Validator check at 19:47:05
+I/flutter ( 3770): 🎯 ALARM DUE NOW!
+I/flutter ( 3770):    ID: 8038952
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Time difference: 5 seconds
+I/flutter ( 3770): 🔧 Triggering alarm that is due now (5s overdue)...
+I/flutter ( 3770): 🚀 Initiating alarm screen navigation and notification display...
+I/flutter ( 3770): Dismissed notification ID: 941081826
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 472092907
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 472092907
+I/flutter ( 3770): ✅ Manual alarm trigger sent with ID: 839032
+I/flutter ( 3770): 🎯 Navigator available - directly pushing to alarm screen
+I/flutter ( 3770): 📋 Enhanced alarm screen payload: {title: Night Shift Alarm (Night), message: Time to wake up!, alarmTone: sounds/wakeupcall.mp3, alarmVolume: 0.9, notificationId: 8038952, type: manual_trigger, originalNotificationId: 8038952, isManualTrigger: true, scheduledTime: 1755398820000}
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 644449094
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 644449094
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 937466290
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 937466290
+I/flutter ( 3770): ✅ Alarm stopped and settings restored
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 405933144
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 405933144
+I/flutter ( 3770): Wake lock enabled
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 155032955
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 155032955
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 789762561
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 789762561
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 81593190
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 81593190
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 832564406
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 832564406
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 957514381
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 957514381
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 818435603
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 818435603
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 977667646
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 977667646
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 467408389
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 467408389
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 1034705152
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 1034705152
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 264671949
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 264671949
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 451329511
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 451329511
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 372996866
+I/flutter ( 3770):    Title: Night Shift Alarm (Night)
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 372996866
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 168869923
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 168869923
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🔔 ALARM SHOULD TRIGGER NOW!
+I/flutter ( 3770):    Notification ID: 261752883
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Expected time: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Current time: 2025-08-16 19:47:05.534385
+I/flutter ( 3770): 🧪 Testing manual trigger for notification 261752883
+I/flutter ( 3770): ✅ Manual test notification sent successfully
+I/flutter ( 3770): 🛑 Stopping reliable alarm ID: 8038952
+D/AlarmApiImpl( 3770): Warning notification is already turned off.
+I/flutter ( 3770): ✅ Alarm cancelled: 8038952
+I/flutter ( 3770): ✅ Reliable alarm stopped successfully
+D/AlarmApiImpl( 3770): Alarm stopped notification for 8038952 was processed successfully by Flutter.
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+I/flutter ( 3770): Dismissed notification ID: 8038952
+I/flutter ( 3770): ✅ Alarm stopped and settings restored
+I/flutter ( 3770): ✅ Successfully auto-navigated to alarm screen from manual trigger
+I/flutter ( 3770):    Cancelled original notification 8038952
+I/flutter ( 3770): 🎯 ALARM DUE NOW!
+I/flutter ( 3770):    ID: 472092907
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Time difference: 5 seconds
+I/flutter ( 3770): 🔧 Triggering alarm that is due now (5s overdue)...
+I/flutter ( 3770): 🚀 Initiating alarm screen navigation and notification display...
+I/flutter ( 3770): ✅ Manual alarm trigger sent with ID: 897627
+I/flutter ( 3770): 🎯 Navigator available - directly pushing to alarm screen
+I/flutter ( 3770): 📋 Enhanced alarm screen payload: {title: Night Shift Alarm (Night), message: Time to wake up!, alarmTone: sounds/wakeupcall.mp3, alarmVolume: 0.9, notificationId: 8038952, type: manual_trigger, originalNotificationId: 472092907, isManualTrigger: true, scheduledTime: 1755398820000}
+I/flutter ( 3770): 🛑 Stopping reliable alarm ID: 8038952
+I/flutter ( 3770): Wake lock enabled
+D/AlarmApiImpl( 3770): Warning notification is already turned off.
+E/flutter ( 3770): [ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: PlatformException(Unexpected AndroidAudioError, Player has not yet been created or has already been disposed., java.lang.IllegalStateException: Player has not yet been created or has already been disposed.
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin.getPlayer(AudioplayersPlugin.kt:209)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin.methodHandler(AudioplayersPlugin.kt:105)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin.access$methodHandler(AudioplayersPlugin.kt:21)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin$onAttachedToEngine$1$1.invoke(AudioplayersPlugin.kt:37)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin$onAttachedToEngine$1$1.invoke(AudioplayersPlugin.kt:37)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin.safeCall(AudioplayersPlugin.kt:56)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin.onAttachedToEngine$lambda$0(AudioplayersPlugin.kt:37)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin.$r8$lambda$1vepZk-E6R5vmkq5YXudNp2pY8I(Unknown Source:0)
+E/flutter ( 3770): 	at xyz.luan.audioplayers.AudioplayersPlugin$$ExternalSyntheticLambda0.onMethodCall(D8$$SyntheticClass:0)
+E/flutter ( 3770): 	at io.flutter.plugin.common.MethodChannel$IncomingMethodCallHandler.onMessage(MethodChannel.java:267)
+E/flutter ( 3770): 	at io.flutter.embedding.engine.dart.DartMessenger.invokeHandler(DartMessenger.java:292)
+E/flutter ( 3770): 	at io.flutter.embedding.engine.dart.DartMessenger.lambda$dispatchMessageToQueue$0$io-flutter-embedding-engine-dart-DartMessenger(DartMessenger.java:319)
+E/flutter ( 3770): 	at io.flutter.embedding.engine.dart.DartMessenger$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+E/flutter ( 3770): 	at android.os.Handler.handleCallback(Handler.java:995)
+E/flutter ( 3770): 	at android.os.Handler.dispatchMessage(Handler.java:103)
+E/flutter ( 3770): 	at android.os.Looper.loopOnce(Looper.java:248)
+E/flutter ( 3770): 	at android.os.Looper.loop(Looper.java:338)
+E/flutter ( 3770): 	at android.app.ActivityThread.main(ActivityThread.java:9067)
+E/flutter ( 3770): 	at java.lang.reflect.Method.invoke(Native Method)
+E/flutter ( 3770): 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+E/flutter ( 3770): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+E/flutter ( 3770): , null)
+E/flutter ( 3770): #0      StandardMethodCodec.decodeEnvelope (package:flutter/src/services/message_codecs.dart:652:7)
+E/flutter ( 3770): #1      MethodChannel._invokeMethod (package:flutter/src/services/platform_channel.dart:370:18)
+E/flutter ( 3770): <asynchronous suspension>
+E/flutter ( 3770): #2      AudioPlayer.stop (package:audioplayers/src/audioplayer.dart:259:7)
+E/flutter ( 3770): <asynchronous suspension>
+E/flutter ( 3770): #3      AudioPlayer.release (package:audioplayers/src/audioplayer.dart:286:5)
+E/flutter ( 3770): <asynchronous suspension>
+E/flutter ( 3770): #4      AudioPlayer.dispose (package:audioplayers/src/audioplayer.dart:497:5)
+E/flutter ( 3770): <asynchronous suspension>
+E/flutter ( 3770): 
+I/flutter ( 3770): ✅ Alarm cancelled: 8038952
+I/flutter ( 3770): ✅ Reliable alarm stopped successfully
+D/AlarmApiImpl( 3770): Alarm stopped notification for 8038952 was processed successfully by Flutter.
+I/flutter ( 3770): Dismissed notification ID: 8038952
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+I/flutter ( 3770): ✅ Alarm stopped and settings restored
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/flutter ( 3770): 🔍 Validator check at 19:47:35
+I/flutter ( 3770): 🎯 ALARM DUE NOW!
+I/flutter ( 3770):    ID: 472092907
+I/flutter ( 3770):    Title: ALARM TRIGGER
+I/flutter ( 3770):    Scheduled: 2025-08-16 19:47:00.000
+I/flutter ( 3770):    Time difference: 35 seconds
+I/flutter ( 3770): 🔧 Triggering alarm that is due now (35s overdue)...
+I/flutter ( 3770): 🚀 Initiating alarm screen navigation and notification display...
+I/flutter ( 3770): ✅ Manual alarm trigger sent with ID: 897627
+I/flutter ( 3770): 🎯 Navigator available - directly pushing to alarm screen
+I/flutter ( 3770): 📋 Enhanced alarm screen payload: {title: Night Shift Alarm (Night), message: Time to wake up!, alarmTone: sounds/wakeupcall.mp3, alarmVolume: 0.9, notificationId: 8038952, type: manual_trigger, originalNotificationId: 472092907, isManualTrigger: true, scheduledTime: 1755398820000}
+I/flutter ( 3770): Wake lock enabled
+I/flutter ( 3770): Playing alarm sound: sounds/wakeupcall.mp3
+V/MediaPlayer( 3770): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 3770): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+I/AudioManager( 3770): dispatching onAudioFocusChange(-1) to android.media.AudioManager@7525baxyz.luan.audioplayers.player.ModernFocusManager$$ExternalSyntheticLambda0@43c675c
+I/flutter ( 3770): Alarm setup complete - sound should be playing continuously
+I/r.shiftcalendar( 3770): Background concurrent mark compact GC freed 4120KB AllocSpace bytes, 0(0B) LOS objects, 49% free, 4134KB/8269KB, paused 197us,4.280ms total 200.594ms

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'dart:ui';
+import '../main.dart'; // Import for navigatorKey access
 
 /// Service to validate alarm triggers and detect when alarms should fire but don't
 class AlarmTriggerValidator {
@@ -10,6 +11,9 @@ class AlarmTriggerValidator {
   Timer? _validationTimer;
   final List<MissedAlarm> _missedAlarms = [];
   bool _isRunning = false;
+  
+  // Track recently triggered alarms to prevent re-triggering
+  Set<int> _recentlyTriggeredAlarms = {};
   
   AlarmTriggerValidator(this._notifications);
   
@@ -20,12 +24,12 @@ class AlarmTriggerValidator {
     _isRunning = true;
     print('🔍 ALARM TRIGGER VALIDATOR STARTED');
     
-    // Check every 30 seconds for missed alarms
+    // Check every 30 seconds for missed alarms (efficient validation only when app is active)
     _validationTimer = Timer.periodic(Duration(seconds: 30), (timer) async {
       await _checkForMissedAlarms();
     });
     
-    print('✅ Validator checking every 30 seconds for missed alarms');
+    print('✅ Validator checking every 30 seconds for missed alarms (efficient background validation)');
   }
   
   /// Stop alarm trigger validation
@@ -57,6 +61,7 @@ class AlarmTriggerValidator {
       
       int missedCount = 0;
       int upcomingCount = 0;
+      int currentCount = 0;
       
       for (final notification in alarmNotifications) {
         try {
@@ -81,16 +86,17 @@ class AlarmTriggerValidator {
           // Check if alarm should trigger RIGHT NOW (within 1 minute window)
           else if (timeDiff.inMinutes >= 0 && timeDiff.inMinutes < 2) {
             await _handleCurrentAlarm(notification, scheduledTime, timeDiff);
+            currentCount++;
           }
         } catch (e) {
           print('⚠️ Error processing notification ${notification.id}: $e');
         }
       }
       
-      if (missedCount == 0 && upcomingCount == 0) {
-        print('✅ No missed or upcoming alarms detected');
+      if (missedCount == 0 && upcomingCount == 0 && currentCount == 0) {
+        print('✅ No missed, current, or upcoming alarms detected');
       } else {
-        print('📊 Summary: ${missedCount} missed, ${upcomingCount} upcoming');
+        print('📊 Summary: $missedCount missed, $currentCount current, $upcomingCount upcoming');
       }
       
     } catch (e) {
@@ -143,9 +149,26 @@ class AlarmTriggerValidator {
     print('   Scheduled: $scheduledTime');
     print('   Time difference: ${timeDiff.inSeconds} seconds');
     
-    // If the alarm is more than 30 seconds overdue, manually trigger it
-    if (timeDiff.inSeconds > 30) {
-      print('🔧 Manually triggering overdue alarm...');
+    // CRITICAL FIX: Check if this is a redundant trigger - avoid re-triggering same alarm
+    // If we already handled this notification recently, skip it
+    if (_recentlyTriggeredAlarms.contains(notification.id)) {
+      print('⏭️ Skipping: Alarm ${notification.id} was already triggered recently');
+      return;
+    }
+    
+    // If the alarm is due now (0+ seconds), manually trigger it
+    if (timeDiff.inSeconds >= 0) {
+      print('🔧 Triggering alarm that is due now (${timeDiff.inSeconds}s overdue)...');
+      print('🚀 Initiating alarm screen navigation and notification display...');
+      
+      // Mark as recently triggered to prevent re-triggering
+      _recentlyTriggeredAlarms.add(notification.id);
+      
+      // Clean up old triggered alarms (keep only last 50)
+      if (_recentlyTriggeredAlarms.length > 50) {
+        _recentlyTriggeredAlarms = _recentlyTriggeredAlarms.skip(25).toSet();
+      }
+      
       await _triggerManualAlarm(notification);
     }
   }
@@ -245,6 +268,39 @@ class AlarmTriggerValidator {
       
       print('✅ Manual alarm trigger sent with ID: $manualId');
       
+      // ENHANCED: Directly navigate to AlarmScreen with proper payload structure
+      try {
+        if (navigatorKey.currentState != null) {
+          print('🎯 Navigator available - directly pushing to alarm screen');
+          
+          // Enhanced payload with proper fallbacks for AlarmScreen
+          final alarmScreenPayload = {
+            'title': payload['title'] ?? originalNotification.title ?? 'Alarm',
+            'message': payload['message'] ?? originalNotification.body ?? 'Your alarm is ringing!',
+            'alarmTone': payload['alarmTone'] ?? payload['soundPath'] ?? 'sounds/wakeupcall.mp3',
+            'alarmVolume': payload['alarmVolume'] ?? payload['volume'] ?? 0.9,
+            'notificationId': payload['notificationId'] ?? originalNotification.id,
+            'type': 'manual_trigger',
+            'originalNotificationId': originalNotification.id,
+            'isManualTrigger': true,
+            'scheduledTime': payload['scheduledTime'] ?? DateTime.now().millisecondsSinceEpoch,
+          };
+          
+          print('📋 Enhanced alarm screen payload: $alarmScreenPayload');
+          
+          // Use pushNamedAndRemoveUntil to ensure alarm screen is top priority
+          await navigatorKey.currentState!.pushNamed('/alarm', arguments: alarmScreenPayload);
+          print('✅ Successfully auto-navigated to alarm screen from manual trigger');
+          
+        } else {
+          print('❌ Navigator not available during manual trigger - alarm screen will not show automatically');
+          print('📱 User must manually open the app to see alarm screen');
+        }
+      } catch (e) {
+        print('❌ Error auto-navigating to alarm screen from manual trigger: $e');
+        print('Stack trace: $e');
+      }
+      
       // Remove the original notification since we manually triggered it
       await _notifications.cancel(originalNotification.id);
       print('   Cancelled original notification ${originalNotification.id}');
@@ -260,7 +316,8 @@ class AlarmTriggerValidator {
   /// Clear missed alarms history
   void clearMissedAlarms() {
     _missedAlarms.clear();
-    print('🧹 Cleared missed alarms history');
+    _recentlyTriggeredAlarms.clear();
+    print('🧹 Cleared missed alarms history and recent triggers');
   }
   
   /// Get validation status

@@ -22,13 +22,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get createPattern => '패턴 만들기';
 
   @override
-  String get useSamplePattern => '샘플 패턴 사용';
-
-  @override
-  String get samplePatternDescription =>
-      '직접 패턴을 만들거나 샘플 주-주-야-야-휴-휴 패턴을 사용하세요.';
-
-  @override
   String get currentPattern => '현재 패턴';
 
   @override

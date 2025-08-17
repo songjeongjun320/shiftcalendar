@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../l10n/app_localizations.dart';
 import '../models/shift_alarm.dart';
+import '../models/alarm_enums.dart';
 
 class ShiftAlarmSettingsDialog extends StatefulWidget {
   final ShiftAlarm alarm;

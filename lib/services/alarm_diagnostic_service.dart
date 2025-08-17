@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -21,7 +22,7 @@ class AlarmDiagnosticService {
     if (_isRunning) return;
     
     _isRunning = true;
-    print('=== ALARM DIAGNOSTIC SERVICE STARTED ===');
+    debugPrint('=== ALARM DIAGNOSTIC SERVICE STARTED ===');
     
     // Log current system information
     _logSystemInfo();
@@ -31,7 +32,7 @@ class AlarmDiagnosticService {
       await _performDiagnosticCheck();
     });
     
-    print('Diagnostic monitoring active - checking every minute');
+    debugPrint('Diagnostic monitoring active - checking every minute');
   }
   
   /// Stop diagnostic monitoring
@@ -39,7 +40,7 @@ class AlarmDiagnosticService {
     _diagnosticTimer?.cancel();
     _diagnosticTimer = null;
     _isRunning = false;
-    print('=== ALARM DIAGNOSTIC SERVICE STOPPED ===');
+    debugPrint('=== ALARM DIAGNOSTIC SERVICE STOPPED ===');
   }
   
   /// Log current system information
@@ -47,13 +48,13 @@ class AlarmDiagnosticService {
     final now = DateTime.now();
     final nowTZ = tz.TZDateTime.now(tz.local);
     
-    print('=== SYSTEM DIAGNOSTIC INFO ===');
-    print('Current DateTime: $now');
-    print('Current TZDateTime: $nowTZ');
-    print('System TimeZone: ${now.timeZoneName}');
-    print('System TimeZone Offset: ${now.timeZoneOffset}');
-    print('TZ Local Location: ${tz.local.name}');
-    print('================================');
+    debugPrint('=== SYSTEM DIAGNOSTIC INFO ===');
+    debugPrint('Current DateTime: $now');
+    debugPrint('Current TZDateTime: $nowTZ');
+    debugPrint('System TimeZone: ${now.timeZoneName}');
+    debugPrint('System TimeZone Offset: ${now.timeZoneOffset}');
+    debugPrint('TZ Local Location: ${tz.local.name}');
+    debugPrint('================================');
   }
   
   /// Perform diagnostic check every minute
@@ -61,7 +62,7 @@ class AlarmDiagnosticService {
     final now = DateTime.now();
     final nowTZ = tz.TZDateTime.now(tz.local);
     
-    print('🕐 DIAGNOSTIC CHECK: ${now.toString().substring(11, 16)} (${nowTZ.toString().substring(11, 16)})');
+    debugPrint('🕐 DIAGNOSTIC CHECK: ${now.toString().substring(11, 16)} (${nowTZ.toString().substring(11, 16)})');
     
     // Check pending notifications
     final pending = await _notifications.pendingNotificationRequests();
@@ -75,8 +76,8 @@ class AlarmDiagnosticService {
       }
     }).toList();
     
-    print('📋 Total pending notifications: ${pending.length}');
-    print('⏰ Alarm notifications: ${alarmNotifications.length}');
+    debugPrint('📋 Total pending notifications: ${pending.length}');
+    debugPrint('⏰ Alarm notifications: ${alarmNotifications.length}');
     
     // Check for alarms that should have triggered
     for (final notification in alarmNotifications) {
@@ -90,28 +91,28 @@ class AlarmDiagnosticService {
         
         if (timeDiff.inMinutes >= 0 && timeDiff.inMinutes <= 5) {
           if (timeDiff.inMinutes > 0) {
-            print('🚨 MISSED ALARM DETECTED!');
-            print('   Notification ID: ${notification.id}');
-            print('   Title: ${notification.title}');
-            print('   Scheduled: $scheduledTime');
-            print('   Current: $now');
-            print('   Overdue by: ${timeDiff.inMinutes} minutes');
-            print('   Payload: ${notification.payload}');
+            debugPrint('🚨 MISSED ALARM DETECTED!');
+            debugPrint('   Notification ID: ${notification.id}');
+            debugPrint('   Title: ${notification.title}');
+            debugPrint('   Scheduled: $scheduledTime');
+            debugPrint('   Current: $now');
+            debugPrint('   Overdue by: ${timeDiff.inMinutes} minutes');
+            debugPrint('   Payload: ${notification.payload}');
           } else {
-            print('⏰ ALARM DUE NOW!');
-            print('   Notification ID: ${notification.id}');
-            print('   Title: ${notification.title}');
-            print('   Scheduled: $scheduledTime');
+            debugPrint('⏰ ALARM DUE NOW!');
+            debugPrint('   Notification ID: ${notification.id}');
+            debugPrint('   Title: ${notification.title}');
+            debugPrint('   Scheduled: $scheduledTime');
           }
         }
         
         // Show upcoming alarms (next 60 minutes)
         if (timeDiff.inMinutes < 0 && timeDiff.inMinutes > -60) {
           final minutesUntil = -timeDiff.inMinutes;
-          print('⌛ Upcoming alarm in $minutesUntil minutes: ${notification.title}');
+          debugPrint('⌛ Upcoming alarm in $minutesUntil minutes: ${notification.title}');
         }
       } catch (e) {
-        print('❌ Error parsing notification payload: $e');
+        debugPrint('❌ Error parsing notification payload: $e');
       }
     }
     
@@ -138,17 +139,17 @@ class AlarmDiagnosticService {
         );
         
         if (currentMinute.isAtSameMomentAs(scheduledMinute)) {
-          print('🔔 ALARM SHOULD TRIGGER NOW!');
-          print('   Notification ID: ${notification.id}');
-          print('   Title: ${notification.title}');
-          print('   Expected time: $scheduledTime');
-          print('   Current time: $now');
+          debugPrint('🔔 ALARM SHOULD TRIGGER NOW!');
+          debugPrint('   Notification ID: ${notification.id}');
+          debugPrint('   Title: ${notification.title}');
+          debugPrint('   Expected time: $scheduledTime');
+          debugPrint('   Current time: $now');
           
           // Test if we can manually trigger the notification
           await _testManualTrigger(notification);
         }
       } catch (e) {
-        print('❌ Error checking current minute alarm: $e');
+        debugPrint('❌ Error checking current minute alarm: $e');
       }
     }
   }
@@ -156,7 +157,7 @@ class AlarmDiagnosticService {
   /// Test manual trigger of a notification
   Future<void> _testManualTrigger(PendingNotificationRequest originalNotification) async {
     try {
-      print('🧪 Testing manual trigger for notification ${originalNotification.id}');
+      debugPrint('🧪 Testing manual trigger for notification ${originalNotification.id}');
       
       // Try to manually show a test notification
       await _notifications.show(
@@ -187,9 +188,9 @@ class AlarmDiagnosticService {
         }),
       );
       
-      print('✅ Manual test notification sent successfully');
+      debugPrint('✅ Manual test notification sent successfully');
     } catch (e) {
-      print('❌ Failed to send manual test notification: $e');
+      debugPrint('❌ Failed to send manual test notification: $e');
     }
   }
   
@@ -210,7 +211,7 @@ class AlarmDiagnosticService {
         // Note: there's no direct way to check notification permission status
         // so we'll try to create a channel as a test
       } catch (e) {
-        print('Error checking Android permissions: $e');
+        debugPrint('Error checking Android permissions: $e');
       }
     }
     
@@ -234,7 +235,7 @@ class AlarmDiagnosticService {
   
   /// Force check all pending alarms and report status
   Future<void> forceDiagnosticCheck() async {
-    print('🔍 FORCE DIAGNOSTIC CHECK INITIATED');
+    debugPrint('🔍 FORCE DIAGNOSTIC CHECK INITIATED');
     _logSystemInfo();
     await _performDiagnosticCheck();
     
@@ -246,29 +247,29 @@ class AlarmDiagnosticService {
   
   /// Validate timezone setup
   Future<void> _validateTimezoneSetup() async {
-    print('🌍 TIMEZONE VALIDATION:');
+    debugPrint('🌍 TIMEZONE VALIDATION:');
     
     try {
       final systemTime = DateTime.now();
       final tzTime = tz.TZDateTime.now(tz.local);
       
-      print('   System time: $systemTime');
-      print('   TZ time: $tzTime');
-      print('   Difference: ${systemTime.difference(tzTime.toLocal()).inMilliseconds}ms');
+      debugPrint('   System time: $systemTime');
+      debugPrint('   TZ time: $tzTime');
+      debugPrint('   Difference: ${systemTime.difference(tzTime.toLocal()).inMilliseconds}ms');
       
       if (systemTime.difference(tzTime.toLocal()).abs().inSeconds > 1) {
-        print('   ⚠️ WARNING: System time and TZ time differ significantly!');
+        debugPrint('   ⚠️ WARNING: System time and TZ time differ significantly!');
       } else {
-        print('   ✅ Timezone setup appears correct');
+        debugPrint('   ✅ Timezone setup appears correct');
       }
     } catch (e) {
-      print('   ❌ Timezone validation error: $e');
+      debugPrint('   ❌ Timezone validation error: $e');
     }
   }
   
   /// Validate notification channels
   Future<void> _validateNotificationChannels() async {
-    print('📢 NOTIFICATION CHANNELS VALIDATION:');
+    debugPrint('📢 NOTIFICATION CHANNELS VALIDATION:');
     
     final androidPlugin = _notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
     
@@ -283,34 +284,34 @@ class AlarmDiagnosticService {
             importance: Importance.max,
           ),
         );
-        print('   ✅ Can create notification channels');
+        debugPrint('   ✅ Can create notification channels');
       } catch (e) {
-        print('   ❌ Cannot create notification channels: $e');
+        debugPrint('   ❌ Cannot create notification channels: $e');
       }
     } else {
-      print('   ℹ️ Not running on Android platform');
+      debugPrint('   ℹ️ Not running on Android platform');
     }
   }
   
   /// Validate permissions
   Future<void> _validatePermissions() async {
-    print('🔐 PERMISSIONS VALIDATION:');
+    debugPrint('🔐 PERMISSIONS VALIDATION:');
     
     final androidPlugin = _notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
     
     if (androidPlugin != null) {
       try {
         final canScheduleExact = await androidPlugin.canScheduleExactNotifications();
-        print('   Exact alarm permission: $canScheduleExact');
+        debugPrint('   Exact alarm permission: $canScheduleExact');
         
         if (canScheduleExact != true) {
-          print('   ❌ CRITICAL: Exact alarm permission not granted!');
-          print('   📋 Solution: User must manually grant SCHEDULE_EXACT_ALARM permission');
+          debugPrint('   ❌ CRITICAL: Exact alarm permission not granted!');
+          debugPrint('   📋 Solution: User must manually grant SCHEDULE_EXACT_ALARM permission');
         } else {
-          print('   ✅ Exact alarm permission granted');
+          debugPrint('   ✅ Exact alarm permission granted');
         }
       } catch (e) {
-        print('   ❌ Permission check error: $e');
+        debugPrint('   ❌ Permission check error: $e');
       }
     }
   }
