@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shiftcalendar/services/alarm_service.dart';
@@ -681,6 +682,220 @@ class _AlarmDebugScreenState extends State<AlarmDebugScreen> {
                           },
                           icon: const Icon(Icons.clear, size: 16),
                           label: const Text('Cancel', style: TextStyle(fontSize: 12)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Pending Alarms Debug Section (NEW)
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.teal.shade50,
+                border: Border.all(color: Colors.teal.shade200),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.list_alt, color: Colors.teal.shade600),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Pending Alarms Debug',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.teal.shade800,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Debug all pending alarms and notifications. Check console for detailed log output.',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            try {
+                              print('🔍 ================================');
+                              print('🔍 DEBUGGING ALL PENDING ALARMS');
+                              print('🔍 ================================');
+                              
+                              // Debug BasicAlarm notifications
+                              final basicAlarmService = BasicAlarmService(widget.diagnosticService.notifications);
+                              await basicAlarmService.debugPendingBasicAlarms();
+                              
+                              // Debug all notification requests
+                              final pending = await widget.diagnosticService.notifications.pendingNotificationRequests();
+                              print('\n📋 ALL PENDING NOTIFICATIONS:');
+                              print('Total pending notifications: ${pending.length}');
+                              
+                              if (pending.isEmpty) {
+                                print('⚠️ NO PENDING NOTIFICATIONS FOUND!');
+                              } else {
+                                print('\n📝 DETAILED NOTIFICATION LIST:');
+                                for (int i = 0; i < pending.length; i++) {
+                                  final req = pending[i];
+                                  print('─── Notification ${i + 1}/${pending.length} ───');
+                                  print('ID: ${req.id}');
+                                  print('Title: ${req.title}');
+                                  print('Body: ${req.body}');
+                                  
+                                  if (req.payload != null) {
+                                    try {
+                                      final payload = jsonDecode(req.payload!);
+                                      print('Type: ${payload['type'] ?? 'N/A'}');
+                                      print('Alarm ID: ${payload['alarmId'] ?? 'N/A'}');
+                                      if (payload['scheduledTime'] != null) {
+                                        final scheduledTime = DateTime.fromMillisecondsSinceEpoch(payload['scheduledTime']);
+                                        print('Scheduled Time: $scheduledTime');
+                                        final now = DateTime.now();
+                                        final diff = scheduledTime.difference(now);
+                                        if (diff.isNegative) {
+                                          print('Status: ⚠️ OVERDUE by ${-diff.inMinutes} minutes');
+                                        } else {
+                                          print('Status: ⏰ Due in ${diff.inMinutes} minutes');
+                                        }
+                                      }
+                                      print('Payload: ${req.payload}');
+                                    } catch (e) {
+                                      print('Payload: Invalid JSON - ${req.payload}');
+                                    }
+                                  } else {
+                                    print('Payload: null');
+                                  }
+                                }
+                              }
+                              
+                              // Debug reliable alarms (AlarmService)
+                              print('\n🌉 RELIABLE ALARM SERVICE STATUS:');
+                              try {
+                                final reliableAlarms = await AlarmService.getAllAlarms();
+                                print('Active reliable alarms: ${reliableAlarms.length}');
+                                
+                                if (reliableAlarms.isNotEmpty) {
+                                  print('\n📋 RELIABLE ALARMS:');
+                                  for (int i = 0; i < reliableAlarms.length; i++) {
+                                    final alarm = reliableAlarms[i];
+                                    print('─── Reliable Alarm ${i + 1}/${reliableAlarms.length} ───');
+                                    print('ID: ${alarm.id}');
+                                    print('Title: ${alarm.notificationSettings.title}');
+                                    print('Message: ${alarm.notificationSettings.body}');
+                                    print('Scheduled: ${alarm.dateTime}');
+                                    print('Sound: ${alarm.assetAudioPath}');
+                                    print('Volume: ${alarm.volumeSettings.volume}');
+                                    final now = DateTime.now();
+                                    final diff = alarm.dateTime.difference(now);
+                                    if (diff.isNegative) {
+                                      print('Status: ⚠️ OVERDUE by ${-diff.inMinutes} minutes');
+                                    } else {
+                                      print('Status: ⏰ Due in ${diff.inMinutes} minutes');
+                                    }
+                                  }
+                                }
+                              } catch (e) {
+                                print('❌ Error getting reliable alarms: $e');
+                              }
+                              
+                              print('\n🔍 ================================');
+                              print('🔍 PENDING ALARMS DEBUG COMPLETED');
+                              print('🔍 ================================');
+                              
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('🔍 Pending alarms debug completed - check console for detailed output'),
+                                  backgroundColor: Colors.teal,
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
+                              
+                            } catch (e) {
+                              print('❌ Error during pending alarms debug: $e');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('❌ Debug failed: $e'),
+                                  backgroundColor: Colors.red,
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.bug_report),
+                          label: const Text('Debug Pending Alarms'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal.shade600,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            try {
+                              print('🧹 ================================');
+                              print('🧹 CLEARING ALL ALARMS AND NOTIFICATIONS');
+                              print('🧹 ================================');
+                              
+                              // Cancel all pending notifications
+                              final pending = await widget.diagnosticService.notifications.pendingNotificationRequests();
+                              print('Cancelling ${pending.length} pending notifications...');
+                              
+                              for (final req in pending) {
+                                await widget.diagnosticService.notifications.cancel(req.id);
+                                print('Cancelled notification ID: ${req.id} (${req.title})');
+                              }
+                              
+                              // Stop all reliable alarms
+                              await AlarmService.stopAllAlarms();
+                              print('Stopped all reliable alarms');
+                              
+                              // Clear basic alarms
+                              final basicAlarmService = BasicAlarmService(widget.diagnosticService.notifications);
+                              await basicAlarmService.cancelAllBasicAlarms();
+                              print('Cancelled all basic alarms');
+                              
+                              print('✅ All alarms and notifications cleared successfully');
+                              print('🧹 ================================');
+                              
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('🧹 All alarms and notifications cleared'),
+                                  backgroundColor: Colors.orange,
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                              
+                              // Refresh the debug screen
+                              await _loadSystemState();
+                              
+                            } catch (e) {
+                              print('❌ Error clearing alarms: $e');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('❌ Clear failed: $e'),
+                                  backgroundColor: Colors.red,
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.delete_sweep),
+                          label: const Text('Clear All'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.orange.shade600,
+                          ),
                         ),
                       ),
                     ],
